@@ -26,7 +26,7 @@
         table.updateTable();*/
         console.log(csvData);
 
-        options = [0, 1, 2, 3];
+        options = [csvData[0], csvData[1], csvData[2], csvData[3]];
 
         let selector = d3.select("#dropdown")
         .append("select")
@@ -34,7 +34,7 @@
         .selectAll("option")
         .data(csvData)
         .enter().append("option")
-        .text(function(d) { return d.QueryName; });
+        .text(function(d) { return d.QueryName.trim(); });
 
     });
 //});
