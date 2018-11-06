@@ -1,12 +1,5 @@
-    /**
-     * Loads in the table information from fifa-matches-2018.json
-     */
-//d3.json('data/fifa-matches-2018.json').then( data => {
 
-    /**
-     * Loads in the tree information from fifa-tree-2018.csv and calls createTree(csvData) to render the tree.
-     *
-     */
+
     d3.csv("data/games-features.csv").then(csvData => {
 
         /*//Create a unique "id" field for each game
@@ -25,8 +18,11 @@
         table.createTable();
         table.updateTable();*/
         console.log(csvData);
+        d3.csv("data/steam-200k.csv").then(userData => {
+			console.log(userData);
+        	
+    	});
 
-        options = [csvData[0], csvData[1], csvData[2], csvData[3]];
 
         let selector = d3.select("#dropdown")
         .append("select")
@@ -34,10 +30,9 @@
         .selectAll("option")
         .data(csvData)
         .enter().append("option")
-        .text(function(d) { return d.QueryName.trim(); });
+        .text(function(d) { return d.QueryName; });
 
     });
-//});
 
 
 
