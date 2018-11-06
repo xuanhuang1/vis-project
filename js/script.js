@@ -26,6 +26,16 @@
         table.updateTable();*/
         console.log(csvData);
 
+        options = [0, 1, 2, 3];
+
+        let selector = d3.select("#dropdown")
+        .append("select")
+        .attr("id", "gameselector")
+        .selectAll("option")
+        .data(csvData)
+        .enter().append("option")
+        .text(function(d) { return d.QueryName; });
+
     });
 //});
 
