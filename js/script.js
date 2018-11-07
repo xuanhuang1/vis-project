@@ -1,6 +1,6 @@
 
 
-    d3.csv("data/games-features.csv").then(csvData => {
+    d3.csv("data/games-features-test.csv").then(csvData => {
 
         /*//Create a unique "id" field for each game
         csvData.forEach( (d, i) => {
@@ -18,14 +18,17 @@
         table.createTable();
         table.updateTable();*/
         console.log(csvData);
-        d3.csv("data/steam-200k.csv").then(userData => {
+        d3.csv("data/steam-200k-test.csv").then(userData => {
 			console.log(userData);
 			let l = 0, p =0;
 			csvData.forEach( (d, i) => {
             	let a = userData.filter(function (k){
             		 if ((k.Name == d.QueryName) || (k.Name == d.ResponseName)){
-            		 	l++;
-            		  	return true;}
+                         d.QueryName = k.name;
+                         d.ResponseName = k.name;
+                         l++;
+                         return true;
+            		 }
             	});
             	if(a.length > 0){
             		//console.log(a);
