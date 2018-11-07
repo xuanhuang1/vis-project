@@ -20,8 +20,24 @@
         console.log(csvData);
         d3.csv("data/steam-200k.csv").then(userData => {
 			console.log(userData);
+			let l = 0, p =0;
+			csvData.forEach( (d, i) => {
+            	let a = userData.filter(function (k){
+            		 if ((k.Name == d.QueryName) || (k.Name == d.ResponseName)){
+            		 	l++;
+            		  	return true;}
+            	});
+            	if(a.length > 0){
+            		//console.log(a);
+            		p++;
+            	}
+            	d['buyers'] = a;
+        	});
+        	console.log("user data matched:",l);
+        	console.log("game data matched:",p);
         	
     	});
+		console.log(csvData);
 
 
         let selector = d3.select("#dropdown")
