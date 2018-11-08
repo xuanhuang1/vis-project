@@ -24,8 +24,8 @@
 			csvData.forEach( (d, i) => {
             	let a = userData.filter(function (k){
             		 if ((k.Name == d.QueryName) || (k.Name == d.ResponseName)){
-                         d.QueryName = k.name;
-                         d.ResponseName = k.name;
+                         d.QueryName = k.Name;
+                         d.ResponseName = k.Name;
                          l++;
                          return true;
             		 }
@@ -40,7 +40,7 @@
         	console.log("game data matched:",p);
         	
     	});
-		console.log(csvData);
+		//console.log(csvData);
 
 
         let selector = d3.select("#dropdown")
@@ -50,6 +50,10 @@
         .data(csvData)
         .enter().append("option")
         .text(function(d) { return d.QueryName; });
+
+        let table = new Table(csvData);
+        table.createTable();
+        table.updateTable();
 
     });
 
