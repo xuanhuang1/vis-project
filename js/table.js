@@ -26,7 +26,6 @@ class Table {
         };
 
         // goal graph size & marginal
-        this.goalGraphWidth = 120;
         this.marginal_LR = 10;
     }
 
@@ -45,13 +44,14 @@ class Table {
         let theCell= this.cell;
         let that = this;
 
-        let tempMax = d3.max(theData, x=>d3.max(x.PriceFinal));
+        let tempMax = d3.max(theData, x=>(+x.PriceFinal));
+        console.log(tempMax);
         //let tempMin = tempMax;
 
         // Create the axes
-        this.goalScale = d3.scaleLinear()
+        this.priceScale = d3.scaleLinear()
             .domain([0, tempMax])
-            .range([0,that.goalGraphWidth])
+            .range([0,that.cell.width])
             .nice();
 
         // ******* TODO: PART V *******
@@ -94,11 +94,10 @@ class Table {
         //Append th elements for the Team Names
 
         let th = tr.selectAll('th').data(d=>[d]);
-        let th_enter = th.enter()
-            .append('th');
-
+        let th_enter = th.enter().append('th');
+        th_enter.append('text');
         th.exit().remove();
-        th = th.merge(th_enter);
+        th = th.merge(th.enter());
 
 
 
@@ -134,7 +133,8 @@ class Table {
             .attr('width', that.cell.width).attr('height', that.cell.height);
 
         Genre_svg.append('rect');
-        Price_svg.append('rect');
+        Price_svg.append('rect').attr('fill', '#b1b1b1');
+        Price_svg.append('text');
         Year_svg.append('text');
         Lang_svg.append('text');
         Age_svg.append('text');
@@ -144,8 +144,19 @@ class Table {
         td.exit().remove();
         td = td.merge(td_enter);
 
-        console.log('aaaaa');
-        console.log(td.data());
+        /*console.log('aaaaa');
+        console.log(td.data());*/
+
+        th.select('text').text(d=>d.QueryName);
+        Price_svg.select('rect')
+            .attr('x', 0)
+            .attr('y', 0)
+            .attr('width', d=>that.priceScale(d.Price))
+            .attr('height', that.cell.height);
+        Price_svg.select('text')
+            .attr('x', 0)
+            .attr('y', that.cell.height*0.7)
+            .text(d=>d.Price);
 
         //Add scores as title property to appear on hover
 
