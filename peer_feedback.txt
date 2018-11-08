@@ -1,0 +1,12 @@
+Feedback Team: Jeff Kelso, Andrew Potts, Nick Stephenson
+
+1. color code in network. In the original proposal, we did not discuss how we would
+	color-code the network. It can be used as a selection for users to choose 
+	how to color code the network. By genre, by game type, or by certain score threshold.
+2. Percentage of match genre. Given two particular games/genre of games, how much they
+	are similar in other factors.
+3. Search. It can be nice if the user can search the information of a particular game.
+4. Zoom on Netwrok. Semantic zoom on network so it is easier to see the bigger picture,
+	then gives more detail when zoomed in
+5. Mutiple selection and see shared neighborhood. In the network, it would be nice if the
+	user can select 2 or more nodes, and the network shows what neighbors they share.
