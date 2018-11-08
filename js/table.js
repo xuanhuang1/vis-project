@@ -3,10 +3,7 @@ class Table {
     /**
      * Creates a Table Object
      */
-    constructor(teamData, treeObject) {
-
-        // Maintain reference to the tree object
-        this.tree = treeObject;
+    constructor(teamData) {
 
         /**List of all elements that will populate the table.*/
         // Initially, the tableElements will be identical to the teamData
@@ -28,26 +25,6 @@ class Table {
             "height": 20
         };
 
-        /** Set variables for commonly accessed data columns*/
-        this.goalsMadeHeader = 'Goals Made';
-        this.goalsConcededHeader = 'Goals Conceded';
-
-        /** Setup the scales*/
-        this.goalScale = null;
-
-
-        /** Used for games/wins/losses*/
-        this.gameScale = null;
-
-        /**Color scales*/
-        /**For aggregate columns*/
-        /** Use colors '#feebe2' and '#690000' for the range*/
-        this.aggregateColorScale = null;
-
-        /**For goal Column*/
-        /** Use colors '#cb181d' and '#034e7b' for the range */
-        this.goalColorScale = null;
-
         // goal graph size & marginal
         this.goalGraphWidth = 120;
         this.marginal_LR = 10;
@@ -68,33 +45,14 @@ class Table {
         let theCell= this.cell;
         let that = this;
 
-        let tempMax = d3.max(theData, x=>d3.max([x.value['Goals Conceded'], x.value['Goals Made']]));
-        let tempMin = d3.min(theData, x=>d3.max([x.value['Goals Conceded'], x.value['Goals Made']]));
-        if(tempMin < 3) tempMin = 0;
+        let tempMax = d3.max(theData, x=>d3.max(x.PriceFinal));
         //let tempMin = tempMax;
 
         // Create the axes
         this.goalScale = d3.scaleLinear()
-            .domain([tempMin, tempMax])
+            .domain([0, tempMax])
             .range([0,that.goalGraphWidth])
             .nice();
-
-        
-        //add GoalAxis to header of col 1.
-        let goalAxis = d3.axisTop();
-        goalAxis.scale(this.goalScale);
-
-        let svg = d3.select('#goalHeader').append("svg")
-            .attr("width", that.goalGraphWidth+that.marginal_LR*2)
-            .attr("height", 30);
-
-        svg.append('g')
-            .attr("class", "axis")
-            .style('font-size',"10px")
-            .attr("transform", "translate("+(that.marginal_LR)+',' + 20 + ")")
-            .call(goalAxis.ticks(8));
-
-        d3.select('#matchTable').select('thead').attr('sorted', -1);
 
         // ******* TODO: PART V *******
 
@@ -122,8 +80,7 @@ class Table {
 
         //console.log(tr);
 
-        let tr_enter = tr.enter().append('tr')
-            .attr('expanded', 0);
+        let tr_enter = tr.enter().append('tr');
 
         //console.log(tr);
 
@@ -131,11 +88,7 @@ class Table {
         tr = tr.merge(tr_enter);
 
         tr.each(function(x){
-            if(x.value['type'] === 'aggregate') {
-                d3.select(this).attr('id',d => d['key']);
-            }else if(x.value['type'] === 'game') {
-                d3.select(this).attr('id',d => 'x' + d['key']);
-            }
+            d3.select(this).attr('id',d => d['QueryName']);
         });
 
         //Append th elements for the Team Names
@@ -147,19 +100,6 @@ class Table {
         th.exit().remove();
         th = th.merge(th_enter);
 
-        th.each(function(x){
-            if(x.value['type'] === 'aggregate') {
-                d3.select(this).classed('aggregate', true)
-                                .classed('game', false)
-                                .text(d => d['key']);
-            }else if(x.value['type'] === 'game') {
-                d3.select(this).classed('aggregate', false)
-                                .classed('game', true)
-                                .text(d => 'x' + d['key']);
-            }else
-                console.log('type wrong!', x.value['type']);
-        });
-
 
 
         //Append td elements for the remaining columns. 
@@ -168,21 +108,51 @@ class Table {
 
         let td = tr.selectAll('td')
             .data((d)=>[
-                {'type': d['value']['type'],'vis':'goals', 'value':[d['value']['Goals Conceded'], d['value']['Goals Made']]},
-                {'type': d['value']['type'],'vis':'text', 'value':d['value']['Result']['label']},
-                {'type': d['value']['type'],'vis':'bar', 'value':d['value']['Wins']},
-                {'type': d['value']['type'],'vis':'bar', 'value':d['value']['Losses']},
-                {'type': d['value']['type'],'vis':'bar', 'value':d['value']['TotalGames']}
+                {   'Genre' : [d.GenreIsAction, d.GenreIsAdventure, d.GenreIsCasual, d.GenreIsEarlyAccess,
+                    d.GenreIsFreeToPlay, d.GenreIsIndie, d.GenreIsMassivelyMultiplayer, d.GenreIsNonGame,
+                    d.GenreIsRPG, d.GenreIsRacing, d.GenreIsSimulation, d.GenreIsSports, d.GenreIsStrategy],
+                    'ControllerSupport' : d.ControllerSupport,
+                    'Name': d.QueryName, 'Price' : d.PriceFinal,
+                    'Age': d.RequiredAge, 'Date': d.ReleaseDate,
+                    'Platform' :  [d.PlatformLinux, d.PlatformMac, d.PlatformWindows]
+                }
             ]);
-        let td_enter = td.enter().append('td');
+        let td_enter = td.enter();
+        let Genre_svg = td_enter.append('td').append('svg').classed('Genre_svg',true)
+            .attr('width', that.cell.width).attr('height', that.cell.height);
+        let Price_svg = td_enter.append('td').append('svg').classed('Price_svg',true)
+            .attr('width', that.cell.width).attr('height', that.cell.height);
+        let Year_svg = td_enter.append('td').append('svg').classed('Year_svg',true)
+            .attr('width', that.cell.width).attr('height', that.cell.height)
+        let Lang_svg = td_enter.append('td').append('svg').classed('Lang_svg',true)
+            .attr('width', that.cell.width).attr('height', that.cell.height);
+        let Age_svg = td_enter.append('td').append('svg').classed('Age_svg',true)
+            .attr('width', that.cell.width).attr('height', that.cell.height);
+        let Ctnlr_svg = td_enter.append('td').append('svg').classed('Ctnlr_svg',true)
+            .attr('width', that.cell.width).attr('height', that.cell.height);
+        let Pltfm_svg = td_enter.append('td').append('svg').classed('Pltfm_svg',true)
+            .attr('width', that.cell.width).attr('height', that.cell.height);
 
+        Genre_svg.append('rect');
+        Price_svg.append('rect');
+        Year_svg.append('text');
+        Lang_svg.append('text');
+        Age_svg.append('text');
+        Ctnlr_svg.append('text');
+        Pltfm_svg.append('text');
+
+        td.exit().remove();
+        td = td.merge(td_enter);
+
+        console.log('aaaaa');
+        console.log(td.data());
 
         //Add scores as title property to appear on hover
 
         //Populate cells (do one type of cell at a time )
 
         //Add bars for win/lose/total
-        let bars = td_enter.filter((d) => {return d.vis == 'bar'});
+        /*let bars = td_enter.filter((d) => {return d.vis == 'bar'});
         let b_svg = bars.append('svg').classed('b_svg', true);
 
         b_svg.append('rect');
@@ -374,7 +344,7 @@ class Table {
             })
             .on('mouseout', function(d){
                 that.tree.clearTree();
-            });
+            });*/
 
 
 
