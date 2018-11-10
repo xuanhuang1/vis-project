@@ -55,6 +55,13 @@
         table.createTable();
         table.updateTable();
 
+
+		d3.json('data/network.json').then(networkData=>{
+            let network = new Network(networkData);
+            network.createNetwork();
+		})
+
+
     });
 
 

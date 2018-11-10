@@ -1,10 +1,15 @@
 /** Class implementing the tree view. */
-class Tree {
+class Network {
     /**
      * Creates a Tree Object
      */
-    constructor() {
-
+    constructor(data) {
+        this.data =data;
+        this.height = 600;
+        this.width = 500;
+        this.node=null;
+        this.link=null;
+        this.simulation=null;
     }
 
     /**
@@ -12,119 +17,58 @@ class Tree {
      *
      * @param treeData an array of objects that contain parent/child information.
      */
-    createTree(treeData) {
+    createNetwork() {
+        let that = this;
+        let links = this.data.links.map(d => Object.create(d));
+        let nodes = this.data.nodes.map(d => Object.create(d));
 
-        // ******* TODO: PART VI *******
+
+        let svg = d3.select('#layout');
 
 
-        //Create a tree and give it a size() of 800 by 300. (svg 500 x 900)
-        let margin = {'top': 50, 'right': 100, 'bottom': 50, 'left': 100};
-        let height = 500 - margin.left - margin.right;
-        let width = 900 - margin.top - margin.bottom;
+        this.link = svg.append("g")
+            .attr("stroke", "#999")
+            .attr("stroke-opacity", 0.6)
+            .selectAll("line")
+            .data(links)
+            .enter().append("line")
+            .attr("stroke-width", 2);
 
-        let the_tree_group = d3.select('#tree')
-            .attr("transform", "translate("
-            + margin.left + "," + margin.top + ")")
-
-        let treemap = d3.tree().size([width, height]);
-        //console.log(treeData);
-
-        //Create a root for the tree using d3.stratify();
-        let root = d3.stratify()
-            .id(d => { return d.id; })
-            .parentId(d => {
-                if(d.ParentGame == '') return null;
-                return treeData[d.ParentGame].id;
-            })
-            (treeData);
-
-        //Add nodes and links to the tree.
-        root.x = height/2;
-        root.y = 0;
-
-        let theTreeDataSruct = treemap(root);
-        let nodes = theTreeDataSruct.descendants(),
-            links = theTreeDataSruct.descendants().slice(1);
-
-        let theGroup = the_tree_group.selectAll('g')
+        this.node = svg.append("g")
+            .attr("stroke", "#fff")
+            .attr("stroke-width", 1.5)
+            .selectAll("circle")
             .data(nodes)
-            .enter();
+            .enter().append("circle")
+            .attr("r", 5)
+            .attr("fill", 'black');
 
+        this.node.append("title")
+            .text(d => d.id);
+        this.simulation = d3.forceSimulation(nodes)
+            .force('link',d3.forceLink(links).id(d=>d.id))
+            .force('charge',d3.forceManyBody().strength(-1000))
+            .force('center',d3.forceCenter())
+            .force('collide',d3.forceCollide().radius(5).iterations(10))
+            .stop();
 
-        function diagonal(s, d) {
-            return `M ${s.y} ${s.x}
-            C ${(s.y + d.y) / 2} ${s.x},
-              ${(s.y + d.y) / 2} ${d.x},
-              ${d.y} ${d.x}`
+        d3.timeout(function(){
+              for (var i = 0, n = Math.ceil(Math.log(that.simulation.alphaMin()) / Math.log(1 - that.simulation.alphaDecay())); i < n; ++i) {
+                    that.simulation.tick();}
+              that.link
+                    .attr("x1", d => d.source.x)
+                    .attr("y1", d => d.source.y)
+                    .attr("x2", d => d.target.x)
+                    .attr("y2", d => d.target.y)
+                    .attr('transform','translate(' + that.width/2 + ',' +  that.height/2 + ')' );;
+
+                that.node
+                    .attr("cx", d => d.x)
+                    .attr("cy", d => d.y)
+                  .attr('transform','translate(' + that.width/2 + ',' +  that.height/2 + ')' );;
+        })
+
         }
 
-        theGroup.append('g')
-            .attr('class','link')
-            .append('path')
-            .attr('d', d => {
-                if(d.parent == null) return;
-                return diagonal(d, d.parent)
-            });
 
-        let nodeGroup = theGroup.append('g')
-            .attr("transform", d => "translate(" + d.y + "," + d.x + ")")
-            .attr('class',function(d){
-                if(d.data.Wins == 1) return'node winner';
-                return 'node loser'
-                })
-
-        nodeGroup.append('circle')
-            .attr('r', 6)
-        nodeGroup.append('text')
-            .attr("dy", ".35em")
-            .attr("dx", ".5em")
-            //.attr('x', -10)
-            //.attr('y', )
-            .text(d=>d.data.Team);
-
-
-    }
-
-    /**
-     * Updates the highlighting in the tree based on the selected team.
-     * Highlights the appropriate team nodes and labels.
-     *
-     * @param row a string specifying which team was selected in the table.
-     */
-    updateTree(row) {
-        // ******* TODO: PART VII *******
-
-        let links = d3.select('#tree').selectAll('.link');
-        let nodes = d3.select('#tree').selectAll('text');
-        if(row.value.type == 'aggregate' ){
-            links.each(function(x){
-                if(x.data.Team == row.key) d3.select(this).classed('selected', true);
-            });
-            nodes.each(function(x){
-                if(x.data.Team == row.key) d3.select(this).classed('selectedLabel', true);
-            });
-        }else if(row.value.type == 'game' ){
-            links.each(function(x){
-                if(((x.data.Team == row.key) && (x.data.Opponent == row.value.Opponent)) ||
-                    ((x.data.Team == row.value.Opponent) && (x.data.Opponent == row.key)))
-                    d3.select(this).classed('selected', true);
-            });
-            nodes.each(function(x){
-                if(((x.data.Team == row.key) && (x.data.Opponent == row.value.Opponent)) ||
-                    ((x.data.Team == row.value.Opponent) && (x.data.Opponent == row.key)))
-                    d3.select(this).classed('selectedLabel', true);
-            });
-        }else{console.log('What did you hover on? should be a agg or game row');}
-    
-    }
-
-    /**
-     * Removes all highlighting from the tree.
-     */
-    clearTree() {
-        // ******* TODO: PART VII *******
-        d3.select('#tree').selectAll('.link').classed('selected', false);
-        d3.select('#tree').selectAll('text').classed('selectedLabel', false);
-        // You only need two lines of code for this! No loops!
-    }
 }
