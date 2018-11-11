@@ -124,7 +124,7 @@ class Table {
                     d.GenreIsRPG, d.GenreIsRacing, d.GenreIsSimulation, d.GenreIsSports, d.GenreIsStrategy]                
             ]);
         let td_enter = td.enter().append('td');
-        let Link_svg = td_enter.filter(function (d, i) { return i === 0;}).append('svg').classed('Price_svg',true)
+        let Link_svg = td_enter.filter(function (d, i) { return i === 0;}).append('svg').classed('Link_svg',true)
             .attr('width', 30).attr('height', that.cell.height);
         let Price_svg = td_enter.filter(function (d, i) { return i === 1;}).append('svg').classed('Price_svg',true)
             .attr('width', 60).attr('height', that.cell.height);
@@ -157,8 +157,8 @@ class Table {
         td.exit().remove();
         td = td.merge(td_enter);
 
-        /*console.log('aaaaa');
-        console.log(td.data());*/
+        /*console.log('aaaaa');*/
+        console.log(td.data);
 
         th.select('text').text(d=>d.QueryName);
         td.selectAll('svg').selectAll('text')
@@ -169,20 +169,20 @@ class Table {
         td.selectAll('svg').selectAll('.LinuxSrpt')
             .attr('x', 35);
 
-        Link_svg.select('text').text(d=>d);
+        td.select('.Link_svg').select('text').text(d=>d);
         Price_svg.select('rect')
             .attr('x', 0)
             .attr('y', 0)
             .attr('width', d=>that.priceScale(d))
             .attr('height', that.cell.height);
-        Price_svg.select('text').text(d=>d);
-        Year_svg.select('text').text(d=>d);
-        Lang_svg.select('text').text(d=>d);
-        Age_svg.select('text').text(d=>d);
-        Pltfm_svg.select('.WindowsSrpt').text(d=>(d[0] == 'TRUE')? "W": "");
-        Pltfm_svg.select('.MacSrpt').text(d=>(d[1] == 'TRUE')? "M": "");
-        Pltfm_svg.select('.LinuxSrpt').text(d=>(d[2] == 'TRUE')? "L": "");
-        Ctnlr_svg.select('text').text(d=>d);
+        td.select('.Price_svg').select('text').text(d=>d);
+        td.select('.Year_svg').select('text').text(d=>d);
+        td.select('.Lang_svg').select('text').text(d=>d);
+        td.select('.Age_svg').select('text').text(d=>d);
+        td.select('.Ctnlr_svg').select('text').text(d=>d);
+        td.select('.WindowsSrpt').select('text').text(d=>(d[0] == 'TRUE')? "W": "");
+        td.select('.MacSrpt').select('text').text(d=>(d[1] == 'TRUE')? "M": "");
+        td.select('.LinuxSrpt').select('text').text(d=>(d[2] == 'TRUE')? "L": "");
 
 
         //Add scores as title property to appear on hover
