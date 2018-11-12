@@ -158,7 +158,7 @@ class Table {
         td = td.merge(td_enter);
 
         /*console.log('aaaaa');*/
-        console.log(td.data);
+        //console.log(td.data);
 
         th.select('text').text(d=>d.QueryName);
         td.selectAll('svg').selectAll('text')
@@ -170,7 +170,7 @@ class Table {
             .attr('x', 35);
 
         td.select('.Link_svg').select('text').text(d=>d);
-        Price_svg.select('rect')
+        td.select('.Price_svg').select('rect')
             .attr('x', 0)
             .attr('y', 0)
             .attr('width', d=>that.priceScale(d))
@@ -180,9 +180,11 @@ class Table {
         td.select('.Lang_svg').select('text').text(d=>d);
         td.select('.Age_svg').select('text').text(d=>d);
         td.select('.Ctnlr_svg').select('text').text(d=>d);
-        td.select('.WindowsSrpt').select('text').text(d=>(d[0] == 'TRUE')? "W": "");
-        td.select('.MacSrpt').select('text').text(d=>(d[1] == 'TRUE')? "M": "");
-        td.select('.LinuxSrpt').select('text').text(d=>(d[2] == 'TRUE')? "L": "");
+
+        td.select('.WindowsSrpt').text(d=>(d[0] == 'TRUE')? "W": "");
+        td.select('.MacSrpt').text(d=>(d[1] == 'TRUE')? "M": "");
+        td.select('.LinuxSrpt').text(d=>(d[2] == 'TRUE')? "L": "");
+
 
 
         //Add scores as title property to appear on hover
