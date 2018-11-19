@@ -22,6 +22,7 @@ player_list['games'] = player_list['games'].apply(sorted)
 game_list = players['Name'].unique()
 
 source = {}
+degreeList = {}
 
 def getEdgeList():
     for index,row in player_list.iterrows():
