@@ -8,15 +8,11 @@ class Table {
         /**List of all elements that will populate the table.*/
         // Initially, the tableElements will be identical to the teamData
         this.tableElements = teamData;
-
-        ///** Store all match data for the 2018 Fifa cup */
         this.teamData = teamData;
-
-        this.tableHeaders = ["Delta Goals", "Result", "Wins", "Losses", "TotalGames"];
 
         /** letiables to be used when sizing the svgs in the table cells.*/
         this.cell = {
-            "width": 70,
+            "width": 80,
             "height": 20,
             "buffer": 15
         };
@@ -45,7 +41,7 @@ class Table {
         let that = this;
 
         let tempMax = d3.max(theData, x=>(+x.PriceFinal));
-        console.log(tempMax);
+        //console.log(tempMax);
         //let tempMin = tempMax;
 
         // Create the axes
@@ -72,6 +68,15 @@ class Table {
         // ******* TODO: PART III *******
         //Create table rows
         let that = this;
+
+        let gamenameSelected = d3.select("#gameselector").node().value; 
+        let gameSelected = that.tableElements.filter((d)=>{return (d.QueryName == gamenameSelected)})[0];
+        //console.log(that.tableElements[0]);
+        calcLinks(gameSelected, that.tableElements);
+
+        that.tableElements.sort(function(a,b){
+            return (b.thisLinkCount - a.thisLinkCount);
+        });
 
         //console.log('updateTable', that.tableElements);
 
@@ -106,32 +111,38 @@ class Table {
 
 
         let td = tr.selectAll('td')
-            .data((d)=>[
-                {   'Genre' : [d.GenreIsAction, d.GenreIsAdventure, d.GenreIsCasual, d.GenreIsEarlyAccess,
+            .data((d,i)=>[
+                (i!=0)? d.thisLinkCount: '-' ,
+                d.PriceFinal,
+                d.ReleaseDate,
+                d.SupportedLanguages, 
+                d.RequiredAge, 
+                ((d.ControllerSupport == 'TRUE')? 'Y':'') ,
+                [d.PlatformWindows,d.PlatformMac, d.PlatformLinux],
+                [d.GenreIsAction, d.GenreIsAdventure, d.GenreIsCasual, d.GenreIsEarlyAccess,
                     d.GenreIsFreeToPlay, d.GenreIsIndie, d.GenreIsMassivelyMultiplayer, d.GenreIsNonGame,
-                    d.GenreIsRPG, d.GenreIsRacing, d.GenreIsSimulation, d.GenreIsSports, d.GenreIsStrategy],
-                    'ControllerSupport' : d.ControllerSupport,
-                    'Name': d.QueryName, 'Price' : d.PriceFinal,
-                    'Age': d.RequiredAge, 'Date': d.ReleaseDate,
-                    'Platform' :  [d.PlatformLinux, d.PlatformMac, d.PlatformWindows]
-                }
+                    d.GenreIsRPG, d.GenreIsRacing, d.GenreIsSimulation, d.GenreIsSports, d.GenreIsStrategy]                
             ]);
-        let td_enter = td.enter();
-        let Genre_svg = td_enter.append('td').append('svg').classed('Genre_svg',true)
+        let td_enter = td.enter().append('td');
+        let Link_svg = td_enter.filter(function (d, i) { return i === 0;}).append('svg').classed('Link_svg',true)
+            .attr('width', 30).attr('height', that.cell.height);
+        let Price_svg = td_enter.filter(function (d, i) { return i === 1;}).append('svg').classed('Price_svg',true)
+            .attr('width', 60).attr('height', that.cell.height);
+        let Year_svg = td_enter.filter(function (d, i) { return i === 2;}).append('svg').classed('Year_svg',true)
+            .attr('width', that.cell.width+20).attr('height', that.cell.height)
+        let Lang_svg = td_enter.filter(function (d, i) { return i === 3;}).append('svg').classed('Lang_svg',true)
             .attr('width', that.cell.width).attr('height', that.cell.height);
-        let Price_svg = td_enter.append('td').append('svg').classed('Price_svg',true)
-            .attr('width', that.cell.width).attr('height', that.cell.height);
-        let Year_svg = td_enter.append('td').append('svg').classed('Year_svg',true)
-            .attr('width', that.cell.width).attr('height', that.cell.height)
-        let Lang_svg = td_enter.append('td').append('svg').classed('Lang_svg',true)
-            .attr('width', that.cell.width).attr('height', that.cell.height);
-        let Age_svg = td_enter.append('td').append('svg').classed('Age_svg',true)
-            .attr('width', that.cell.width).attr('height', that.cell.height);
-        let Ctnlr_svg = td_enter.append('td').append('svg').classed('Ctnlr_svg',true)
-            .attr('width', that.cell.width).attr('height', that.cell.height);
-        let Pltfm_svg = td_enter.append('td').append('svg').classed('Pltfm_svg',true)
+        let Age_svg = td_enter.filter(function (d, i) { return i === 4;}).append('svg').classed('Age_svg',true)
+            .attr('width', 30).attr('height', that.cell.height);
+        let Ctnlr_svg = td_enter.filter(function (d, i) { return i === 5;}).append('svg').classed('Ctnlr_svg',true)
+            .attr('width', 20).attr('height', that.cell.height);
+        let Pltfm_svg = td_enter.filter(function (d, i) { return i === 6;}).append('svg').classed('Pltfm_svg',true)
+            .attr('width', 47).attr('height', that.cell.height);
+
+        let Genre_svg = td_enter.filter(function (d, i) { return i === 7;}).append('svg').classed('Genre_svg',true)
             .attr('width', that.cell.width).attr('height', that.cell.height);
 
+        Link_svg.append('text');
         Genre_svg.append('rect');
         Price_svg.append('rect').attr('fill', '#b1b1b1');
         Price_svg.append('text');
@@ -139,24 +150,42 @@ class Table {
         Lang_svg.append('text');
         Age_svg.append('text');
         Ctnlr_svg.append('text');
-        Pltfm_svg.append('text');
+        Pltfm_svg.append('text').attr('class', 'WindowsSrpt');
+        Pltfm_svg.append('text').attr('class', 'MacSrpt');
+        Pltfm_svg.append('text').attr('class', 'LinuxSrpt');
 
         td.exit().remove();
         td = td.merge(td_enter);
 
-        /*console.log('aaaaa');
-        console.log(td.data());*/
+        /*console.log('aaaaa');*/
+        //console.log(td.data);
 
         th.select('text').text(d=>d.QueryName);
-        Price_svg.select('rect')
+        td.selectAll('svg').selectAll('text')
+            .attr('x', 5)
+            .attr('y', that.cell.height*0.7);
+        td.selectAll('svg').selectAll('.MacSrpt')
+            .attr('x', 20);
+        td.selectAll('svg').selectAll('.LinuxSrpt')
+            .attr('x', 35);
+
+        td.select('.Link_svg').select('text').text(d=>d);
+        td.select('.Price_svg').select('rect')
             .attr('x', 0)
             .attr('y', 0)
-            .attr('width', d=>that.priceScale(d.Price))
+            .attr('width', d=>that.priceScale(d))
             .attr('height', that.cell.height);
-        Price_svg.select('text')
-            .attr('x', 0)
-            .attr('y', that.cell.height*0.7)
-            .text(d=>d.Price);
+        td.select('.Price_svg').select('text').text(d=>d);
+        td.select('.Year_svg').select('text').text(d=>d);
+        td.select('.Lang_svg').select('text').text(d=>d);
+        td.select('.Age_svg').select('text').text(d=>d);
+        td.select('.Ctnlr_svg').select('text').text(d=>d);
+
+        td.select('.WindowsSrpt').text(d=>(d[0] == 'TRUE')? "W": "");
+        td.select('.MacSrpt').text(d=>(d[1] == 'TRUE')? "M": "");
+        td.select('.LinuxSrpt').text(d=>(d[2] == 'TRUE')? "L": "");
+
+
 
         //Add scores as title property to appear on hover
 
@@ -291,18 +320,6 @@ class Table {
                 });
         });
 
-        //Expand row when th (Name) clicked
-        tr.on('click', function(d,i){
-                let selected = d3.select(this);
-                //console.log(d,i);
-                let cty_selected = d.value;
-                if(cty_selected.type === 'aggregate'){
-                    let the_attr = selected.attr('expanded')
-                    selected.attr('expanded', 1 - the_attr);
-                    that.updateList(i);
-                    that.updateTable();
-                }
-            });
         //Srt when category clicked
 
         let sortAttrObj = d3.select('#matchTable').select('thead');
@@ -356,53 +373,22 @@ class Table {
             .on('mouseout', function(d){
                 that.tree.clearTree();
             });*/
-
-
-
     };
 
-    /**
-     * Updates the global tableElements variable, with a row for each row to be rendered in the table.
-     *
-     */
-    updateList(i) {
-        // ******* TODO: PART IV *******
-       
-        //Only update list for aggregate clicks, not game clicks
-        let that = this;
-        let theRow = d3.select('tbody').selectAll('tr')
-            .filter(function (d, j) { return j === i;});
-        if(theRow.data()[0]['value']['type'] === 'game'){return;}
-        //console.log(theRow.attr('expanded'));
-        //if()
-        if(theRow.data()[0]['value']['type'] != 'aggregate'){console.log('tyep wrong!');return;}
-        if(theRow.attr('expanded') == 1){
-            let theGames = theRow.data()[0]['value']['games'];
-            for(let j=0;j<theGames.length;j++)
-                that.tableElements.splice(i+j+1, 0, theGames[j]);
+    getData(){return this.tableElements;}
 
-        }else if(theRow.attr('expanded') == 0) {
-            let theGames = theRow.data()[0]['value']['games'];
-            that.tableElements.splice(i+1, theGames.length);
-        }
-        //console.log(that.tableElements);
+}
+
+function calcLinks(game, list){
+    list.forEach((theGame)=>{
+        let maxUserCount = d3.min([game.buyers.length, theGame.buyers.length]);
+        let currentLink = 0;
+        for(let i=0;i<maxUserCount;i++)
+            if((game.buyers[i].User_ID == theGame.buyers[i].User_ID) && 
+                game.QueryName != theGame.QueryName)
+                 currentLink++;
         
-    }
-
-    /**
-     * Collapses all expanded countries, leaving only rows for aggregate values per country.
-     *
-     */
-    collapseList() {
-        
-        // ******* TODO: PART IV *******
-        let that = this;
-        let k = d3.select('tbody').selectAll('tr').filter(function(d){return d.value.type == 'game';});
-        k.each(function (x) {
-            let j = that.tableElements.indexOf(x);
-            that.tableElements.splice(j, 1);
-        })
-    }
-
-
+        theGame.thisLinkCount = currentLink;
+    });
+    game.thisLinkCount  = game.buyers.length+1;
 }

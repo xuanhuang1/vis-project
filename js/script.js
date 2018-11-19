@@ -1,5 +1,6 @@
 
 
+
     d3.csv("data/games-features-test.csv").then(csvData => {
 
         /*//Create a unique "id" field for each game
@@ -17,9 +18,9 @@
 
         table.createTable();
         table.updateTable();*/
-        console.log(csvData);
+        //console.log(csvData);
         d3.csv("data/steam-200k-test.csv").then(userData => {
-			console.log(userData);
+			//console.log(userData);
 			let l = 0, p =0;
 			csvData.forEach( (d, i) => {
             	let a = userData.filter(function (k){
@@ -27,6 +28,7 @@
                          d.QueryName = k.Name;
                          d.ResponseName = k.Name;
                          l++;
+                         //console.log(d.	QueryName);
                          return true;
             		 }
             	});
@@ -34,57 +36,43 @@
             		//console.log(a);
             		p++;
             	}
-            	d['buyers'] = a;
+            	d.buyers = a;
         	});
         	console.log("user data matched:",l);
         	console.log("game data matched:",p);
+
+        	// set selector and change function
+        	let selector = d3.select("#dropdown")
+        		.append("select")
+        		.attr("id", "gameselector")
+        		.selectAll("option")
+        		.data(csvData)
+       	 		.enter().append("option")
+        		.text(function(d) { return d.QueryName; })
+        	d3.select("#gameselector").on('change',onchange);
+
+        	let table = new Table(csvData);
+        	table.createTable();
+
+        	// update elements, calcualte links and sort
+        	table.updateTable();
+
+
+			d3.json('data/network.json').then(networkData=>{
+            	let network = new Network(networkData);
+            	network.createNetwork();
+			})
+
+        	// update to current game data
+			function onchange() {
+				table.updateTable();
+			};
         	
     	});
-		//console.log(csvData);
 
 
-        let selector = d3.select("#dropdown")
-        .append("select")
-        .attr("id", "gameselector")
-        .selectAll("option")
-        .data(csvData)
-        .enter().append("option")
-        .text(function(d) { return d.QueryName; });
-
-        let table = new Table(csvData);
-        table.createTable();
-        table.updateTable();
-
-
-		d3.json('data/network.json').then(networkData=>{
-            let network = new Network(networkData);
-            network.createNetwork();
-		})
 
 
     });
 
 
-
-// // ********************** HACKER VERSION ***************************
-/**
- * Loads in fifa-matches-2018.csv file, aggregates the data into the correct format,
- * then calls the appropriate functions to create and populate the table.
- *
- */
-
-// d3.csv("data/fifa-matches-2018.csv").then( matchesCSV => {
-
-//     /**
-//      * Loads in the tree information from fifa-tree-2018.csv and calls createTree(csvData) to render the tree.
-//      *
-//      */
-//    d3.csv("data/fifa-tree-2018.csv").then( treeCSV => {
-
-//     // ******* TODO: PART I *******
-
-
-//       });
-
-// });
-// ********************** END HACKER VERSION ***************************
