@@ -7,8 +7,8 @@ class Table {
 
         /**List of all elements that will populate the table.*/
         // Initially, the tableElements will be identical to the teamData
-        this.tableElements = teamData;
-        this.teamData = teamData;
+        this.tableElements = [];
+        this.allData = teamData;
 
         /** letiables to be used when sizing the svgs in the table cells.*/
         this.cell = {
@@ -36,7 +36,7 @@ class Table {
         // ******* TODO: PART II *******
 
         //Update Scale Domains
-        let theData = this.teamData;
+        let theData = this.allData;
         let theCell= this.cell;
         let that = this;
 
@@ -70,13 +70,30 @@ class Table {
         let that = this;
 
         let gamenameSelected = d3.select("#gameselector").node().value; 
-        let gameSelected = that.tableElements.filter((d)=>{return (d.QueryName == gamenameSelected)})[0];
+        let gameSelected = that.allData.filter((d)=>{return (d.QueryName == gamenameSelected)})[0];
         //console.log(that.tableElements[0]);
-        calcLinks(gameSelected, that.tableElements);
-
-        that.tableElements.sort(function(a,b){
-            return (b.thisLinkCount - a.thisLinkCount);
+        //calcLinks(gameSelected, that.tableElements);
+        let neighborPairs = parseNeighborList(gameSelected);
+        //let neighborPairs = [[1, 6],[3, 4],[5, 3]];
+        that.tableElements = [];
+        that.tableElements.push(gameSelected);
+        neighborPairs.sort(function(a,b){
+            return (b[1] - a[1]); 
         });
+
+        for (var i = 0; i < d3.min([neighborPairs.length, 10]); i++) {
+            let theNeighbor = that.allData[neighborPairs[i][0]];
+            theNeighbor.linkCount = neighborPairs[i][1];
+            that.tableElements.push(theNeighbor);
+        }
+        //that.tableElements
+
+
+        console.log(gameSelected.QueryName,":::",  neighborPairs);
+
+        /*that.tableElements.sort(function(a,b){
+            return (b.thisLinkCount - a.thisLinkCount);
+        });*/
 
         //console.log('updateTable', that.tableElements);
 
@@ -112,7 +129,7 @@ class Table {
 
         let td = tr.selectAll('td')
             .data((d,i)=>[
-                (i!=0)? d.thisLinkCount: '-' ,
+                (i!=0)? d.linkCount:'-' ,
                 d.PriceFinal,
                 d.ReleaseDate,
                 d.SupportedLanguages, 
@@ -379,16 +396,13 @@ class Table {
 
 }
 
-function calcLinks(game, list){
-    list.forEach((theGame)=>{
-        let maxUserCount = d3.min([game.buyers.length, theGame.buyers.length]);
-        let currentLink = 0;
-        for(let i=0;i<maxUserCount;i++)
-            if((game.buyers[i].User_ID == theGame.buyers[i].User_ID) && 
-                game.QueryName != theGame.QueryName)
-                 currentLink++;
-        
-        theGame.thisLinkCount = currentLink;
-    });
-    game.thisLinkCount  = game.buyers.length+1;
+
+function parseNeighborList(gameSelected){
+    let a = (gameSelected.neighborList).replace('{', '').replace('}', '').replace(' ','');
+    let neighborPairs = a.split(',');
+    for (let i = 0; i < neighborPairs.length; i++) {
+        let j = neighborPairs[i];
+        neighborPairs[i] = j.match(/\d+/g).map(Number);
+    }
+    return neighborPairs;
 }
