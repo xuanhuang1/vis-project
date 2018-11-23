@@ -49,7 +49,6 @@ class Table {
             .domain([0, tempMax])
             .range([0,that.cell.width])
             .nice();
-
         // ******* TODO: PART V *******
 
         // Set sorting callback for clicking on headers
@@ -408,4 +407,12 @@ function parseNeighborList(gameSelected){
 }
 
 function myFunction(){console.log('on');}
-function applyFilter(){console.log('filter');};
+function applyFilter(){
+    console.log('filter');
+    let a = d3.select('#multi-menu-lang')
+    .selectAll("option")
+    .filter(function (d, i) { 
+        return this.selected; 
+    });
+    console.log(a);
+};

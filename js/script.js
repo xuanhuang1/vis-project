@@ -89,6 +89,8 @@
         priceGroup.append('foreignObject')
         .attr('x',0).attr('y',20)
         .attr('width',50).attr('height',20)
+
+   
     }
 
 
