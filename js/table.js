@@ -406,3 +406,6 @@ function parseNeighborList(gameSelected){
     }
     return neighborPairs;
 }
+
+function myFunction(){console.log('on');}
+function applyFilter(){console.log('filter');};
