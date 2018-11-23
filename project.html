@@ -21,7 +21,7 @@
     <div style="width:500px;height:120px;float: left;" id='dropdown'>
         <h2>dropdown</h2>
     </div>
-    <div style="width:900px;height:120px;float: left;" id='filter'>
+    <div style="width:1000px;height:120px;float: left;" id='filter'>
         <h2>Game Display Filter</h2>
         <div style="width:330px;height:50px;float: left;" id = 'filter0-0'>
         <select multiple id="multi-menu-pltfm">
@@ -52,8 +52,8 @@
             <input type="checkbox" id='boxCtnlr'> Controller Support<br><br>
         </div>
             <br><br>
-            <input type="button" value="apply" onclick="applyFilter()"> 
-            <input type="button" value="clear" onclick="applyFilter()"> 
+            <input type="button" value="apply" id='applyFilterButton'> 
+            <input type="button" value="clear"> 
     </div>
     <div class="view">
 
@@ -63,7 +63,7 @@
         </svg>
     </div>
 
-    <div class="view">
+    <div class="view2">
         <h2>Statistic Table</h2>
 
         <table id="statTable">

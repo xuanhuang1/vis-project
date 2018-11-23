@@ -30,6 +30,7 @@
        	 		.enter().append("option")
         		.text(function(d) { return d.QueryName; })
         	d3.select("#gameselector").on('change',onchange);
+        	d3.select("#applyFilterButton").on('click',applyFilter);
         	addFilters();
 
         	let table = new Table(csvData);
@@ -38,16 +39,56 @@
         	// update elements, calcualte links and sort
         	table.updateTable();
 
+        	// update to current game data
+			function onchange() {
+				table.updateTable();
+			};    	
+
+			function applyFilter(){
+    			console.log('filter');
+    			let a = d3.select('#multi-menu-lang')
+    			.selectAll("option")
+    			.filter(function (d, i) { 
+    			    return this.selected; 
+    			});
+    			table.controllerFilter = false;
+    			if(d3.select('#boxCtnlr').node().checked == true) table.controllerFilter = true;
+
+    			table.platformFilter = false;
+    			table.platformFilterArray = [false,false, false];
+    			//console.log("sel:"+d3.select('#boxLinux').node().selected);
+
+    			if(d3.select('#boxWindows').node().selected == true) {table.platformFilter = true; table.platformFilterArray[0]=true;}
+    			if(d3.select('#boxLinux').node().selected == true) {table.platformFilter = true; table.platformFilterArray[1]=true;}
+    			if(d3.select('#boxMac').node().selected == true) {table.platformFilter = true; table.platformFilterArray[2]=true;}
+
+    			let genreFilters =  [
+        		'-- Genre --',
+        		'NonGame','Indie','Action','Adventure','Casual',
+        		'Strategy', 'RPG','Simulation','EarlyAccess','FreeToPlay',
+        		'Sports','Racing','MassivelyMultiplayer'];
+    			table.genreFilter = false;
+    			table.genreFilterArray = [false,false,false,false,false, false,false,false,false,false, 
+                                false,false,false]
+    			for (var i = 1; i < genreFilters.length; i++) {
+    				if(d3.select("#box"+genreFilters[i]).node().selected){
+    					table.genreFilter = true;
+    					table.genreFilterArray[i-1] = true;
+    				}
+    			}
+
+    			console.log(a);
+    			table.updateTable();
+			};
+
+
+
 
 			d3.json('data/network.json').then(networkData=>{
             	let network = new Network(networkData);
             	network.createNetwork();
 			})
 
-        	// update to current game data
-			function onchange() {
-				table.updateTable();
-			};    	
 
 
     });
@@ -57,8 +98,6 @@
     function addFilters(){
     	let genreFilters =  [
         	'-- Genre --',
-        	'SinglePlayer', 'Multiplayer', 'Coop','MMO','InAppPurchase',
-        	'IncludeSrcSDK','IncludeLevelEditor','VRSupport',
         	'NonGame','Indie','Action','Adventure','Casual',
         	'Strategy', 'RPG','Simulation','EarlyAccess','FreeToPlay',
         	'Sports','Racing','MassivelyMultiplayer'];
@@ -90,7 +129,7 @@
         .attr('x',0).attr('y',20)
         .attr('width',50).attr('height',20)
 
-   
+
     }
 
 

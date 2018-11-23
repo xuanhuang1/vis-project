@@ -9,6 +9,12 @@ class Table {
         // Initially, the tableElements will be identical to the teamData
         this.tableElements = [];
         this.allData = teamData;
+        this.platformFilter = false;
+        this.platformFilterArray = [false,false, false];
+        this.controllerFilter = false;
+        this.genreFilter = false;
+        this.genreFilterArray = [false,false,false,false,false, false,false,false,false,false, 
+                                false,false,false]
 
         /** letiables to be used when sizing the svgs in the table cells.*/
         this.cell = {
@@ -73,6 +79,7 @@ class Table {
         //console.log(that.tableElements[0]);
         //calcLinks(gameSelected, that.tableElements);
         let neighborPairs = parseNeighborList(gameSelected);
+        neighborPairs = that.filterNeighbors(neighborPairs);
         //let neighborPairs = [[1, 6],[3, 4],[5, 3]];
         that.tableElements = [];
         that.tableElements.push(gameSelected);
@@ -80,7 +87,7 @@ class Table {
             return (b[1] - a[1]); 
         });
 
-        for (var i = 0; i < d3.min([neighborPairs.length, 10]); i++) {
+        for (var i = 0; i < d3.min([neighborPairs.length, 30]); i++) {
             let theNeighbor = that.allData[neighborPairs[i][0]];
             theNeighbor.linkCount = neighborPairs[i][1];
             that.tableElements.push(theNeighbor);
@@ -88,7 +95,7 @@ class Table {
         //that.tableElements
 
 
-        console.log(gameSelected.QueryName,":::",  neighborPairs);
+        console.log(gameSelected);
 
         /*that.tableElements.sort(function(a,b){
             return (b.thisLinkCount - a.thisLinkCount);
@@ -135,9 +142,9 @@ class Table {
                 d.RequiredAge, 
                 ((d.ControllerSupport == 'TRUE')? 'Y':'') ,
                 [d.PlatformWindows,d.PlatformMac, d.PlatformLinux],
-                [d.GenreIsAction, d.GenreIsAdventure, d.GenreIsCasual, d.GenreIsEarlyAccess,
-                    d.GenreIsFreeToPlay, d.GenreIsIndie, d.GenreIsMassivelyMultiplayer, d.GenreIsNonGame,
-                    d.GenreIsRPG, d.GenreIsRacing, d.GenreIsSimulation, d.GenreIsSports, d.GenreIsStrategy]                
+                [d.GenreIsNonGame.toLowerCase(), d.GenreIsIndie.toLowerCase(), d.GenreIsAction.toLowerCase(), d.GenreIsAdventure.toLowerCase(), d.GenreIsCasual.toLowerCase(),
+                    d.GenreIsStrategy.toLowerCase(), d.GenreIsRPG.toLowerCase(), d.GenreIsSimulation.toLowerCase(), d.GenreIsEarlyAccess.toLowerCase(),
+                    d.GenreIsFreeToPlay.toLowerCase(), d.GenreIsSports.toLowerCase(), d.GenreIsRacing.toLowerCase(), d.GenreIsMassivelyMultiplayer.toLowerCase()]             
             ]);
         let td_enter = td.enter().append('td');
         let Link_svg = td_enter.filter(function (d, i) { return i === 0;}).append('svg').classed('Link_svg',true)
@@ -156,7 +163,11 @@ class Table {
             .attr('width', 47).attr('height', that.cell.height);
 
         let Genre_svg = td_enter.filter(function (d, i) { return i === 7;}).append('svg').classed('Genre_svg',true)
-            .attr('width', that.cell.width).attr('height', that.cell.height);
+            .attr('width', 500).attr('height', that.cell.height);
+        let genreTags =  [
+                'NonGame','Indie','Action','Adventure','Casual',
+                'Strategy', 'RPG ','Simulation','EA  ','FreeToPlay',
+                'Sports','Racing','MassivelyMultiplayer'];
 
         Link_svg.append('text');
         Genre_svg.append('rect');
@@ -169,6 +180,9 @@ class Table {
         Pltfm_svg.append('text').attr('class', 'WindowsSrpt');
         Pltfm_svg.append('text').attr('class', 'MacSrpt');
         Pltfm_svg.append('text').attr('class', 'LinuxSrpt');
+        for (var i = 0; i < genreTags.length; i++) 
+            Genre_svg.append('text').attr('class', 'genre'+genreTags[i]);
+        
 
         td.exit().remove();
         td = td.merge(td_enter);
@@ -200,198 +214,51 @@ class Table {
         td.select('.WindowsSrpt').text(d=>(d[0] == 'TRUE')? "W": "");
         td.select('.MacSrpt').text(d=>(d[1] == 'TRUE')? "M": "");
         td.select('.LinuxSrpt').text(d=>(d[2] == 'TRUE')? "L": "");
+        console.log(td.select('.'+'genre'+genreTags[1]).data());
+        for (var i = 0; i < genreTags.length; i++) 
+            td.select('.'+'genre'+genreTags[i]).attr('x', 38*i).text(d=>((d[i]=='true')? genreTags[i][0]+genreTags[i][1]+genreTags[i][2]+genreTags[i][3]:'-'));
 
 
-
-        //Add scores as title property to appear on hover
-
-        //Populate cells (do one type of cell at a time )
-
-        //Add bars for win/lose/total
-        /*let bars = td_enter.filter((d) => {return d.vis == 'bar'});
-        let b_svg = bars.append('svg').classed('b_svg', true);
-
-        b_svg.append('rect');
-        b_svg.append('text');
-
-        //Create rounds texts
-        let rounds = td_enter.filter((d) => {return d.vis == 'text'})
-            .append('text');
-
-        //Create diagrams in the goals column
-        let goals = td_enter.filter((d) => {return (d.vis == 'goals')});
-        let g_svg = goals.append('svg')
-            .attr("transform", "translate("+(-that.marginal_LR*0.43)+',' + 0 + ")")
-            .classed('g_svg', true);
-        g_svg.append('rect')
-            .classed('goalBar', true);
-        g_svg.append('circle')
-            .classed('goalCirc1', true);
-        g_svg.append('circle')
-            .classed('goalCirc2', true);
-
-        //Set the color of all games that tied to light gray
-        // let tie_goals = td_enter.filter((d) => {return (d.vis == 'goals')&&(d.value[0] == d.value[1]) });
-        // let g_tie_svg = tie_goals.append('svg')
-        //     .classed('t_g_svg',true);
-        // g_tie_svg.append('circle')
-        //     .classed('goalCircle', true)
-        //     .classed('goalCircTie', true);
-        // g_tie_svg.append('circle')
-        //     .classed('goalCircle', true)
-        //     .classed('goalCircTie', true);
-
-        td.exit().remove();
-        td = td.merge(td_enter);
-
-
-        //update svgs
-        let barMax = d3.max(td.filter((d) => {return d.vis == 'bar'}).data(), x=>{return x.value});
-        let barMin = d3.min(td.filter((d) => {return d.vis == 'bar'}).data(), x=>{return x.value});
-        let barScaler = d3.scaleLinear()
-            .domain([barMin, barMax])
-            .range([0,that.cell.width])
-            .nice();
-
-        that.aggregateColorScale = d3.scaleLinear()
-            .domain([barMin, barMax])
-            .range(['#feebe2', '#690000']);
-
-        let bars_all = td.filter((d) => {return d.vis == 'bar'});
-        bars_all.each(function (x) {
-            let the_bsvg = d3.select(this).select('svg')
-                .attr("width", that.cell.width)
-                .attr("height", that.cell.height);
-            the_bsvg.select('rect')
-                .attr('width', d=>barScaler(d.value))
-                .attr('height', that.cell.height)
-                .style('fill', d=>that.aggregateColorScale(d.value));
-
-            the_bsvg.select('text')
-                .text(d=>d.value)
-                .attr('x',d=>barScaler(d.value)-10)
-                .attr('y',14)
-                .attr('fill', '#ffffff');
-        });
-
-        let rounds_all = td.filter((d) => {return d.vis == 'text'}).text(d=>d.value);
-
-        let goals_all = td.filter((d) => {return (d.vis == 'goals') });
-        goals_all.each(function (x) {
-            let the_gsvg = d3.select(this).select('svg')
-                .attr('width', that.goalGraphWidth+that.marginal_LR*2)
-                .attr('height', that.cell.height);
-            the_gsvg.select('rect')
-                .attr('x', d => that.goalScale(d3.min(d.value)))
-                .attr('y', 3)
-                .attr('width', d => that.goalScale(Math.abs(d.value[0] - d.value[1])))
-                .attr('height', '14px')
-                .attr("transform", "translate("+(that.marginal_LR)+',' + 0 + ")")
-                .style('fill', d => {
-                    if (d.value[0] > d.value[1]) return '#cb181d'; else return '#2378ae'
-                });
-
-            let a = the_gsvg.select('.goalCirc1').classed('goalCircle', false);
-            let b = the_gsvg.select('.goalCirc2').classed('goalCircle', false);
-
-            if ( a.data() === x.value[1] ) {
-                let temp = a;
-                a = b;
-                b = temp;
-            }
-
-            a.attr('cx', d => that.goalScale(d.value[0]))
-                .attr('cy', that.cell.height / 2)
-                .attr('r', '7px')
-                .attr("transform", "translate("+(that.marginal_LR)+',' + 0 + ")")
-                .style('fill', '#cb181d')
-                .attr('stroke', '#cb181d');
-
-            b.attr('cx', d => that.goalScale(d.value[1]))
-                .attr('cy', that.cell.height / 2)
-                .attr('r', '7px')
-                .attr("transform", "translate("+(that.marginal_LR)+',' + 0 + ")")
-                .style('fill', '#2378ae')
-                .attr('stroke', '#2378ae');
-
-            if( x.value[0] == x.value[1] ){
-                a.style('fill', 'gray').attr('stroke', 'gray');
-                b.style('fill', 'gray').attr('stroke', 'gray');
-            }
-            if(x.type == 'game'){
-
-                the_gsvg.select('rect').style('fill', 'none');
-                the_gsvg.selectAll('circle')
-                    .style('fill', 'none')
-                    .classed('goalCircle', true);
-            }
-
-            the_gsvg.on('mouseover', function (d) {
-                    d3.select(this)
-                        .append('title')
-                        .text('Goals Conceded: ' + d.value[0] + " Goals Made:" + d.value[1]);
-                    })
-                .on('mouseout', function (d) {
-                    d3.select(this).selectAll('title').remove();
-                });
-        });
-
-        //Srt when category clicked
-
-        let sortAttrObj = d3.select('#matchTable').select('thead');
-        let sortOpts = d3.select('#matchTable').select('thead').select('tr');
-        //console.log(sortOpts);
-        sortOpts.select('th').on('click',function(d){
-            if(sortAttrObj.attr("sorted")  == 0) {
-                that.tableElements.reverse();
-                that.updateTable();
-                return;
-            }
-            that.tableElements.sort(function(a, b) {return a.key>b.key;});
-            sortAttrObj.attr("sorted", 0);
-            that.updateTable();
-        });
-
-        sortOpts.selectAll('td').on('click',function(d,i){
-            that.collapseList();
-            let last_sorted = sortAttrObj.attr("sorted");
-
-            if(last_sorted  == i) {
-                that.tableElements.reverse();
-                that.updateTable();
-                return;
-            }
-
-            if(i == 0) that.tableElements.sort(function(a, b) {return a.value["Delta Goals"] < b.value["Delta Goals"];});
-            if(i == 1) {
-                that.tableElements.sort(function (a, b) {
-                    let theSequence = ['Group', 'Round of Sixteen', 'Quarter Finals', 'Semi Finals',
-                        'Fourth Place', 'Third Place', 'Runner-Up', 'Winner'];
-                    return theSequence.indexOf(a.value.Result.label) < theSequence.indexOf(b.value.Result.label);
-                });
-            }
-            if(i == 2) that.tableElements.sort(function(a, b) {return a.value.Wins < b.value.Wins;});
-            if(i == 3) that.tableElements.sort(function(a, b) {return a.value.Losses < b.value.Losses;});
-            if(i == 4) that.tableElements.sort(function(a, b) {return a.value.TotalGames < b.value.TotalGames;});
-
-            sortAttrObj.attr("sorted", i);
-            that.updateTable();
-        });
-
-
-        // hover tree highlight
-        tr.on('mouseover', function(d,i){
-                //let selected = d3.select(this);
-                //console.log(d,i);
-                that.tree.updateTree(d);
-
-            })
-            .on('mouseout', function(d){
-                that.tree.clearTree();
-            });*/
     };
 
     getData(){return this.tableElements;}
+
+    filterNeighbors(neighborPairs){
+        let that = this;
+        let a = neighborPairs;
+        if(that.controllerFilter == true){
+            a = neighborPairs.filter(function(d){
+                return that.allData[d[0]].ControllerSupport == 'TRUE';
+            });
+        }
+        //let b = a;
+        if(that.platformFilter == true){
+            a = a.filter(function(d){
+                let bool = true;
+                if(that.platformFilterArray[0] == true) bool = bool && (that.allData[d[0]].PlatformWindows == 'TRUE');
+                if(that.platformFilterArray[1] == true) bool = bool && (that.allData[d[0]].PlatformLinux == 'TRUE');
+                if(that.platformFilterArray[2] == true) bool = bool && (that.allData[d[0]].PlatformMac == 'TRUE');
+                return bool;
+            });
+        }
+        if(that.genreFilter == true){
+            a = a.filter(function(d){
+                let genreFilterAttrs =  [
+                    that.allData[d[0]].GenreIsNonGame, that.allData[d[0]].GenreIsIndie, 
+                    that.allData[d[0]].GenreIsAction,  that.allData[d[0]].GenreIsAdventure,
+                    that.allData[d[0]].GenreIsCasual,  that.allData[d[0]].GenreIsStrategy,
+                    that.allData[d[0]].GenreIsRPG   ,  that.allData[d[0]].GenreIsSimulation,
+                    that.allData[d[0]].GenreIsEarlyAccess   ,
+                    that.allData[d[0]].GenreIsFreeToPlay,  that.allData[d[0]].GenreIsSports,
+                    that.allData[d[0]].GenreIsRacing    ,  that.allData[d[0]].GenreIsMassivelyMultiplayer];
+                let bool = true;
+                for(let j=0;j<genreFilterAttrs.length;j++)
+                    if(that.genreFilterArray[j] == true) bool = bool && (genreFilterAttrs[j].toLowerCase()== 'true');
+                return bool;
+            });
+        }
+        return a;
+    }
 
 }
 
@@ -407,12 +274,4 @@ function parseNeighborList(gameSelected){
 }
 
 function myFunction(){console.log('on');}
-function applyFilter(){
-    console.log('filter');
-    let a = d3.select('#multi-menu-lang')
-    .selectAll("option")
-    .filter(function (d, i) { 
-        return this.selected; 
-    });
-    console.log(a);
-};
+
