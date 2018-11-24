@@ -15,6 +15,13 @@ class Table {
         this.genreFilter = false;
         this.genreFilterArray = [false,false,false,false,false, false,false,false,false,false, 
                                 false,false,false]
+        this.langFilter = false;
+        this.langFilterArray = [false,false,false,false,false, false,false,false,false,false, 
+                                false,false,false,false,false, false,false,false,false,false, 
+                                false]
+        this.PriceFilterArray = [0,60];
+        this.yearFilterArray = [0,2019];
+        this.ageFilterNum = 0;
 
         /** letiables to be used when sizing the svgs in the table cells.*/
         this.cell = {
@@ -214,10 +221,19 @@ class Table {
         td.select('.WindowsSrpt').text(d=>(d[0] == 'TRUE')? "W": "");
         td.select('.MacSrpt').text(d=>(d[1] == 'TRUE')? "M": "");
         td.select('.LinuxSrpt').text(d=>(d[2] == 'TRUE')? "L": "");
-        console.log(td.select('.'+'genre'+genreTags[1]).data());
+        //console.log(td.select('.'+'genre'+genreTags[1]).data());
         for (var i = 0; i < genreTags.length; i++) 
             td.select('.'+'genre'+genreTags[i]).attr('x', 38*i).text(d=>((d[i]=='true')? genreTags[i][0]+genreTags[i][1]+genreTags[i][2]+genreTags[i][3]:'-'));
 
+        td.select('.Lang_svg')
+            .on('mouseover', function(d){
+                d3.select(this)
+                        .append('title')
+                        .text(d);
+                    })
+                .on('mouseout', function (d) {
+                    d3.select(this).selectAll('title').remove();
+                });
 
     };
 
@@ -257,6 +273,45 @@ class Table {
                 return bool;
             });
         }
+        if(that.langFilter == true){
+            a = a.filter(function(d){
+                let langTags =  [
+                'English', 'Czech', 'Danish','German','Spanish',
+                'Finnish','French','Italian',
+                'Hungarian','Dutch','Norwegian','Polish','Russian',
+                'Swedish', 'Portuguese','Korean','PortugueseBrazil','Romanian',
+                'Simplified Chinese','Traditional Chinese','Thai'];
+                let bool = true;
+                for(let j=0;j<that.langFilterArray.length;j++){
+                    if(that.langFilterArray[j] == true) {
+                        let temp = that.allData[d[0]].SupportedLanguages;
+                        bool = bool && (temp.indexOf(langTags[j]) != -1);
+                    }
+                }
+                return bool;
+            });
+        }
+        if( (!isNaN(that.PriceFilterArray[0])) && (!isNaN(that.PriceFilterArray[1])) ){
+            a = a.filter(function(d){
+                return (
+                    ((+that.allData[d[0]].PriceFinal) < (+that.PriceFilterArray[0]) == false)
+                    && ((+that.allData[d[0]].PriceFinal) > (+that.PriceFilterArray[1])) == false)
+            });
+        }
+        if( (!isNaN(that.yearFilterArray[0])) && (!isNaN(that.yearFilterArray[1])) ){
+            a = a.filter(function(d){
+                let year = +(that.allData[d[0]].ReleaseDate.split(' ')[2]);
+                return (
+                        ( (year < (+that.yearFilterArray[0])) == false) 
+                     && ( (year > (+that.yearFilterArray[1])) == false) 
+                    )
+            });
+        }
+        if( !isNaN(that.ageFilterNum) ) {
+            a = a.filter(function(d){
+                return ((+(that.allData[d[0]].RequiredAge) < (+that.ageFilterNum)) == false)
+            });
+        }
         return a;
     }
 
@@ -273,5 +328,5 @@ function parseNeighborList(gameSelected){
     return neighborPairs;
 }
 
-function myFunction(){console.log('on');}
+
 

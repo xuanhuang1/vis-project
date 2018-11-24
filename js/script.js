@@ -31,6 +31,8 @@
         		.text(function(d) { return d.QueryName; })
         	d3.select("#gameselector").on('change',onchange);
         	d3.select("#applyFilterButton").on('click',applyFilter);
+        	d3.select("#clearFilterButton").on('click',clearFilter);
+
         	addFilters();
 
         	let table = new Table(csvData);
@@ -77,9 +79,49 @@
     				}
     			}
 
-    			console.log(a);
+    			let langFilters =  [
+        		'-- Language --',
+        		'English', 'Czech', 'Danish','German','Spanish',
+        		'Finnish','French','Italian',
+        		'Hungarian','Dutch','Norwegian','Polish','Russian',
+        		'Swedish', 'Portuguese','Korean','PortugueseBrazil','Romanian',
+        		'SimplifiedChinese','TraditionalChinese','Thai'];
+        		table.langFilter = false;
+        		table.langFilterArray = [false,false,false,false,false, false,false,false,false,false, 
+                                false,false,false,false,false, false,false,false,false,false, 
+                                false];
+                for (var i = 1; i < langFilters.length; i++) {
+    				if( d3.select("#box"+langFilters[i]).node().selected ){
+    					table.langFilter = true;
+    					table.langFilterArray[i-1] = true;
+    				}
+    			}  
+
+    			table.PriceFilterArray[0] = d3.select('#minPrice').node().value;
+    			table.PriceFilterArray[1] = d3.select('#maxPrice').node().value;
+				table.yearFilterArray[0] = d3.select('#minYear').node().value;
+    			table.yearFilterArray[1] = d3.select('#maxYear').node().value;
+    			table.ageFilterNum = d3.select('#minAge').node().value;
     			table.updateTable();
 			};
+
+			function clearFilter(){
+    			table.platformFilter = false;
+    			table.platformFilterArray = [false,false, false];
+    			table.controllerFilter = false;
+    			table.genreFilter = false;
+    			table.genreFilterArray = [false,false,false,false,false, false,false,false,false,false, 
+                                false,false,false]
+    			table.langFilter = false;
+    			table.langFilterArray = [false,false,false,false,false, false,false,false,false,false, 
+                                false,false,false,false,false, false,false,false,false,false, 
+                                false]
+    			table.PriceFilterArray = [0,60];
+    			table.yearFilterArray = [0,2019];
+   				table.ageFilterNum = 0;
+   				table.updateTable();
+			}
+
 
 
 
@@ -114,7 +156,7 @@
         	'Finnish','French','Italian',
         	'Hungarian','Dutch','Norwegian','Polish','Russian',
         	'Swedish', 'Portuguese','Korean','PortugueseBrazil','Romanian',
-        	'Simplified Chinese','Traditional Chinese','Thai'];
+        	'SimplifiedChinese','TraditionalChinese','Thai'];
         	d3.select("#multi-menu-lang")
         		.selectAll('option')
         		.data(langFilters)
