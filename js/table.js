@@ -198,6 +198,10 @@ class Table {
         //console.log(td.data);
 
         th.select('text').text(d=>d.QueryName);
+        th.select('text').on('click', function(d){
+            setSelectedIndex(document.getElementById('gameselector'),d.QueryName);
+            that.updateTable();
+        });
         td.selectAll('svg').selectAll('text')
             .attr('x', 5)
             .attr('y', that.cell.height*0.7);
@@ -328,5 +332,13 @@ function parseNeighborList(gameSelected){
     return neighborPairs;
 }
 
+function setSelectedIndex(s, v) {
+    for ( var i = 0; i < s.options.length; i++ ) {
+        if ( s.options[i].text == v ) {
+            s.options[i].selected = true;
+            return;
+        }
+    }
+}
 
 
