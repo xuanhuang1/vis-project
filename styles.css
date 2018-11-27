@@ -10,11 +10,11 @@ th {
     padding-right: 6px;
     min-width: 125px;
 }
-
+/*
 thead td , th{
     cursor: s-resize;
 }
-
+*/
 tbody tr:first-child td {
     padding-top: 5px;
 }
@@ -41,7 +41,7 @@ tbody td {
 }
 
 tbody tr:hover {
-    background-color: #feebe2;
+    background-color: #dbe8ff;
 }
 
 tbody tr .game {
