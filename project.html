@@ -17,13 +17,13 @@
         <h1>Steam Game Data Analysis</h1>
         <div>Xuan Huang, Haihan Lin</div>
     </header>
-
-    <div style="width:500px;height:120px;float: left;" id='dropdown'>
+    <div style = "width:100%;height : 20%">
+    <div style="width:30%;float: left;" id='dropdown'>
         <h2>dropdown</h2>
     </div>
-    <div style="width:1000px;height:120px;float: left;" id='filter'>
+    <div style="width:70%;float: left;" id='filter'>
         <h2>Game Display Filter</h2>
-        <div style="width:330px;height:50px;float: left;" id = 'filter0-0'>
+        <div style="width:40%;float: left;" id = 'filter0-0'>
         <select multiple id="multi-menu-pltfm">
             <option>-- Platform --</option>
             <option id ='boxWindows'>Windows</option>
@@ -34,31 +34,32 @@
         <select multiple id="multi-menu-lang"></select>
         </div>
 
-        <div style="width:50px;height:50px;float: left;" id = 'filter0-1'>
+        <div style="width:5%; float: left;" id = 'filter0-1'>
             Price: <br> 
-            Year:
+            Year: <br>
             Age:
         </div>
-        <div style="width:60px;height:50px;float: left;" id = 'filter0-2'>
-            <input type="text" value='0' id='minPrice' style="width:30px;height:10px;float: left;"> &nbsp &nbsp  - <br>
-            <input type="text" value='0' id='minYear' style="width:30px;height:10px;float: left;"> &nbsp &nbsp  - <br>
-            <input type="text" value='0' id='minAge' style="width:30px;height:10px;float: left;">
+        <div style="width:5%; float: left;" id = 'filter0-2'>
+            <input type="text" value='0' id='minPrice' style="width:40px;height:10px;float: left;"> &nbsp &nbsp  - <br>
+            <input type="text" value='0' id='minYear' style="width:40px;height:10px;float: left;"> &nbsp &nbsp  - <br>
+            <input type="text" value='0' id='minAge' style="width:40px;height:10px;float: left;">
         </div>
-        <div style="width:70px;height:50px;float: left;" id = 'filter0-3'>
-            <input type="text" value='59.99' id='maxPrice' style="width:30px;float: left;">
-            <input type="text" value='2019' id='maxYear' style="width:30px;height:10px;float: left;">
+        <div style="width:7%; float: left;" id = 'filter0-3'>
+            <input type="text" value='59.99' id='maxPrice' style="width:40px;height:10px;float: left;"><br>
+            <input type="text" value='2019' id='maxYear' style="width:40px;height:10px;float: left;">
         </div>
-        <div style="width:180px;height:50px;float: left;" id = 'filter0-4'>
+        <div style="width:180px; float: left;" id = 'filter0-4'>
             <input type="checkbox" id='boxCtnlr'> Controller Support<br><br>
         </div>
-            <br><br>
+
             <input type="button" value="apply" id='applyFilterButton'> 
             <input type="button" value="clear" id='clearFilterButton'> 
+    </div>
     </div>
     <div class="view">
 
         <h2>Layout</h2>
-        <svg width="500" height="900">
+        <svg width="600" height="900">
             <g id="layout"></g>
         </svg>
     </div>

@@ -1,141 +1,113 @@
 
 
 
-    d3.csv("data/game-features.csv").then(csvData => {
 
-        /*//Create a unique "id" field for each game
-        csvData.forEach( (d, i) => {
-            d.id = d.Team + d.Opponent + i;
-        });
+async function tableCreation(){
+	let csvData = await d3.csv('data/game-features.csv')
+    let selector = d3.select("#dropdown")
+        .append("select")
+        .attr("id", "gameselector")
+        .selectAll("option")
+        .data(csvData)
+        .enter().append("option")
+        .text(function(d) { return d.QueryName; })
+    d3.select("#gameselector").on('change',onchange);
+    d3.select("#applyFilterButton").on('click',applyFilter);
+    d3.select("#clearFilterButton").on('click',clearFilter);
 
-        //Create Tree Object
-        let tree = new Tree();
-        tree.createTree(csvData);
+    addFilters();
+    let table = new Table(csvData);
+    let netWorkData = await d3.json('data/network.json');
+	let network = new Network(netWorkData);
+	network.createNetwork();
+	table.assignNetwork(network);
+    table.createTable();
+    // update elements, calcualte links and sort
+    table.updateTable();
 
-        //Create Table Object and pass in reference to tree object (for hover linking)
+    function onchange() {
+        table.updateTable();
+    }
 
-        let table = new Table(data,tree);
+    function applyFilter(){
+        console.log('filter');
+        let a = d3.select('#multi-menu-lang')
+            .selectAll("option")
+            .filter(function (d, i) {
+                return this.selected;
+            });
+        table.controllerFilter = false;
+        if(d3.select('#boxCtnlr').node().checked == true) table.controllerFilter = true;
 
-        table.createTable();
-        table.updateTable();*/
-        //console.log(csvData);
+        table.platformFilter = false;
+        table.platformFilterArray = [false,false, false];
+        //console.log("sel:"+d3.select('#boxLinux').node().selected);
 
+        if(d3.select('#boxWindows').node().selected == true) {table.platformFilter = true; table.platformFilterArray[0]=true;}
+        if(d3.select('#boxLinux').node().selected == true) {table.platformFilter = true; table.platformFilterArray[1]=true;}
+        if(d3.select('#boxMac').node().selected == true) {table.platformFilter = true; table.platformFilterArray[2]=true;}
 
-        	// set selector and change function
-        	let selector = d3.select("#dropdown")
-        		.append("select")
-        		.attr("id", "gameselector")
-        		.selectAll("option")
-        		.data(csvData)
-       	 		.enter().append("option")
-        		.text(function(d) { return d.QueryName; })
-        	d3.select("#gameselector").on('change',onchange);
-        	d3.select("#applyFilterButton").on('click',applyFilter);
-        	d3.select("#clearFilterButton").on('click',clearFilter);
+        let genreFilters =  [
+            '-- Genre --',
+            'NonGame','Indie','Action','Adventure','Casual',
+            'Strategy', 'RPG','Simulation','EarlyAccess','FreeToPlay',
+            'Sports','Racing','MassivelyMultiplayer'];
+        table.genreFilter = false;
+        table.genreFilterArray = [false,false,false,false,false, false,false,false,false,false,
+            false,false,false]
+        for (var i = 1; i < genreFilters.length; i++) {
+            if(d3.select("#box"+genreFilters[i]).node().selected){
+                table.genreFilter = true;
+                table.genreFilterArray[i-1] = true;
+            }
+        }
 
-        	addFilters();
+        let langFilters =  [
+            '-- Language --',
+            'English', 'Czech', 'Danish','German','Spanish',
+            'Finnish','French','Italian',
+            'Hungarian','Dutch','Norwegian','Polish','Russian',
+            'Swedish', 'Portuguese','Korean','PortugueseBrazil','Romanian',
+            'SimplifiedChinese','TraditionalChinese','Thai'];
+        table.langFilter = false;
+        table.langFilterArray = [false,false,false,false,false, false,false,false,false,false,
+            false,false,false,false,false, false,false,false,false,false,
+            false];
+        for (var i = 1; i < langFilters.length; i++) {
+            if( d3.select("#box"+langFilters[i]).node().selected ){
+                table.langFilter = true;
+                table.langFilterArray[i-1] = true;
+            }
+        }
 
-        	let table = new Table(csvData);
-        	table.createTable();
+        table.PriceFilterArray[0] = d3.select('#minPrice').node().value;
+        table.PriceFilterArray[1] = d3.select('#maxPrice').node().value;
+        table.yearFilterArray[0] = d3.select('#minYear').node().value;
+        table.yearFilterArray[1] = d3.select('#maxYear').node().value;
+        table.ageFilterNum = d3.select('#minAge').node().value;
+        table.updateTable();
+    };
 
-        	// update elements, calcualte links and sort
-        	table.updateTable();
+    function clearFilter(){
+        table.platformFilter = false;
+        table.platformFilterArray = [false,false, false];
+        table.controllerFilter = false;
+        table.genreFilter = false;
+        table.genreFilterArray = [false,false,false,false,false, false,false,false,false,false,
+            false,false,false]
+        table.langFilter = false;
+        table.langFilterArray = [false,false,false,false,false, false,false,false,false,false,
+            false,false,false,false,false, false,false,false,false,false,
+            false]
+        table.PriceFilterArray = [0,60];
+        table.yearFilterArray = [0,2019];
+        table.ageFilterNum = 0;
+        table.updateTable();
+    }
 
-        	// update to current game data
-			function onchange() {
-				table.updateTable();
-			};    	
+}
 
-			function applyFilter(){
-    			console.log('filter');
-    			let a = d3.select('#multi-menu-lang')
-    			.selectAll("option")
-    			.filter(function (d, i) { 
-    			    return this.selected; 
-    			});
-    			table.controllerFilter = false;
-    			if(d3.select('#boxCtnlr').node().checked == true) table.controllerFilter = true;
-
-    			table.platformFilter = false;
-    			table.platformFilterArray = [false,false, false];
-    			//console.log("sel:"+d3.select('#boxLinux').node().selected);
-
-    			if(d3.select('#boxWindows').node().selected == true) {table.platformFilter = true; table.platformFilterArray[0]=true;}
-    			if(d3.select('#boxLinux').node().selected == true) {table.platformFilter = true; table.platformFilterArray[1]=true;}
-    			if(d3.select('#boxMac').node().selected == true) {table.platformFilter = true; table.platformFilterArray[2]=true;}
-
-    			let genreFilters =  [
-        		'-- Genre --',
-        		'NonGame','Indie','Action','Adventure','Casual',
-        		'Strategy', 'RPG','Simulation','EarlyAccess','FreeToPlay',
-        		'Sports','Racing','MassivelyMultiplayer'];
-    			table.genreFilter = false;
-    			table.genreFilterArray = [false,false,false,false,false, false,false,false,false,false, 
-                                false,false,false]
-    			for (var i = 1; i < genreFilters.length; i++) {
-    				if(d3.select("#box"+genreFilters[i]).node().selected){
-    					table.genreFilter = true;
-    					table.genreFilterArray[i-1] = true;
-    				}
-    			}
-
-    			let langFilters =  [
-        		'-- Language --',
-        		'English', 'Czech', 'Danish','German','Spanish',
-        		'Finnish','French','Italian',
-        		'Hungarian','Dutch','Norwegian','Polish','Russian',
-        		'Swedish', 'Portuguese','Korean','PortugueseBrazil','Romanian',
-        		'SimplifiedChinese','TraditionalChinese','Thai'];
-        		table.langFilter = false;
-        		table.langFilterArray = [false,false,false,false,false, false,false,false,false,false, 
-                                false,false,false,false,false, false,false,false,false,false, 
-                                false];
-                for (var i = 1; i < langFilters.length; i++) {
-    				if( d3.select("#box"+langFilters[i]).node().selected ){
-    					table.langFilter = true;
-    					table.langFilterArray[i-1] = true;
-    				}
-    			}  
-
-    			table.PriceFilterArray[0] = d3.select('#minPrice').node().value;
-    			table.PriceFilterArray[1] = d3.select('#maxPrice').node().value;
-				table.yearFilterArray[0] = d3.select('#minYear').node().value;
-    			table.yearFilterArray[1] = d3.select('#maxYear').node().value;
-    			table.ageFilterNum = d3.select('#minAge').node().value;
-    			table.updateTable();
-			};
-
-			function clearFilter(){
-    			table.platformFilter = false;
-    			table.platformFilterArray = [false,false, false];
-    			table.controllerFilter = false;
-    			table.genreFilter = false;
-    			table.genreFilterArray = [false,false,false,false,false, false,false,false,false,false, 
-                                false,false,false]
-    			table.langFilter = false;
-    			table.langFilterArray = [false,false,false,false,false, false,false,false,false,false, 
-                                false,false,false,false,false, false,false,false,false,false, 
-                                false]
-    			table.PriceFilterArray = [0,60];
-    			table.yearFilterArray = [0,2019];
-   				table.ageFilterNum = 0;
-   				table.updateTable();
-			}
-
-
-
-
-
-			d3.json('data/network.json').then(networkData=>{
-            	let network = new Network(networkData);
-            	network.createNetwork();
-			})
-
-
-
-    });
-
-
+	tableCreation();
 
     function addFilters(){
     	let genreFilters =  [

@@ -14,14 +14,15 @@ class Table {
         this.controllerFilter = false;
         this.genreFilter = false;
         this.genreFilterArray = [false,false,false,false,false, false,false,false,false,false, 
-                                false,false,false]
+                                false,false,false];
         this.langFilter = false;
         this.langFilterArray = [false,false,false,false,false, false,false,false,false,false, 
                                 false,false,false,false,false, false,false,false,false,false, 
-                                false]
+                                false];
         this.PriceFilterArray = [0,60];
         this.yearFilterArray = [0,2019];
         this.ageFilterNum = 0;
+        this.network;
 
         /** letiables to be used when sizing the svgs in the table cells.*/
         this.cell = {
@@ -36,6 +37,12 @@ class Table {
 
         // goal graph size & marginal
         this.marginal_LR = 10;
+    }
+
+    assignNetwork(network){
+        this.network = network;
+        console.log('assigned')
+        //this.drawNetwork();
     }
 
 
@@ -65,11 +72,15 @@ class Table {
         // ******* TODO: PART V *******
 
         // Set sorting callback for clicking on headers
-        
+
 
         //Set sorting callback for clicking on Team header
         //Clicking on headers should also trigger collapseList() and updateTable().
 
+    }
+
+    drawNetwork(){
+        this.network.updateNetwork(this.tableElements);
     }
 
 
@@ -99,10 +110,10 @@ class Table {
             theNeighbor.linkCount = neighborPairs[i][1];
             that.tableElements.push(theNeighbor);
         }
+
+        console.log(that.tableElements);
         //that.tableElements
 
-
-        console.log(gameSelected);
 
         /*that.tableElements.sort(function(a,b){
             return (b.thisLinkCount - a.thisLinkCount);
@@ -234,6 +245,7 @@ class Table {
                 .on('mouseout', function (d) {
                     d3.select(this).selectAll('title').remove();
                 });
+        this.drawNetwork();
 
     };
 
@@ -316,6 +328,7 @@ class Table {
     }
 
 }
+
 
 
 function parseNeighborList(gameSelected){
