@@ -15,7 +15,9 @@ class Network {
 
     updateNetwork(tableElements){
         let tempidList = tableElements.map(d=>d.Index)
-        console.log(tempidList)
+        let maxNeighborCounts = d3.max(tableElements.map(d=>Object.keys(d.neighborList).length))
+        
+        //console.log()
         let idList = new Set(tempidList)
         let that = this;
         let linksList = this.data.links.map(function(d){
@@ -44,7 +46,10 @@ class Network {
         this.nodes = this.nodes.enter().append('circle').merge(this.nodes);
         this.nodes.attr("stroke", "#fff")
             .attr("stroke-width", 1.5)
-            .attr("r", 5)
+            .attr("r", function(d){
+              let entry = tableElements.find(e=>e.Index===d.id)
+              return 10*Object.keys(entry.neighborList).length/maxNeighborCounts
+            })
             .attr("fill", 'black')
             .append('title')
             .text(function(d){
