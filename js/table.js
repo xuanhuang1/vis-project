@@ -23,6 +23,7 @@ class Table {
         this.yearFilterArray = [0,2019];
         this.ageFilterNum = 0;
         this.network;
+        this.infoBox;
 
         /** letiables to be used when sizing the svgs in the table cells.*/
         this.cell = {
@@ -39,10 +40,9 @@ class Table {
         this.marginal_LR = 10;
     }
 
-    assignNetwork(network){
+    assignNetworkandInfoBox(network,infobox){
         this.network = network;
-        console.log('assigned')
-        //this.drawNetwork();
+        this.infoBox = infobox;
     }
 
 
@@ -96,7 +96,6 @@ class Table {
         //calcLinks(gameSelected, that.tableElements);
         let neighborPairs = parseNeighborList(gameSelected);
         neighborPairs = that.filterNeighbors(neighborPairs);
-        //let neighborPairs = [[1, 6],[3, 4],[5, 3]];
         that.tableElements = [];
         that.tableElements.push(gameSelected);
         neighborPairs.sort(function(a,b){
@@ -187,7 +186,7 @@ class Table {
 
         Link_svg.append('text');
         Genre_svg.append('rect');
-        Price_svg.append('rect').attr('fill', '#b1b1b1');
+        Price_svg.append('rect').attr('fill', '#153363').attr('opacity',0.5);
         Price_svg.append('text');
         Year_svg.append('text');
         Lang_svg.append('text');
@@ -247,7 +246,8 @@ class Table {
                 .on('mouseout', function (d) {
                     d3.select(this).selectAll('title').remove();
                 });
-        this.network.updateNetwork(this.tableElements,gameSelected);
+        this.network.updateNetwork(this.tableElements,gameSelected,neighborPairs);
+        this.infoBox.updateInfoBox(gameSelected)
 
     };
 

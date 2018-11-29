@@ -17,10 +17,11 @@ async function tableCreation(){
 
     addFilters();
     let table = new Table(csvData);
-    let netWorkData = await d3.json('data/network.json');
-	let network = new Network(netWorkData);
+	let network = new Network();
+	let infobox = new InfoBox();
 	network.createNetwork();
-	table.assignNetwork(network);
+	infobox.createInfoBox();
+	table.assignNetworkandInfoBox(network,infobox);
     table.createTable();
     // update elements, calcualte links and sort
     table.updateTable();

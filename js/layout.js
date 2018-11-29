@@ -3,8 +3,7 @@ class Network {
     /**
      * Creates a Tree Object
      */
-    constructor(data) {
-        this.data =data;
+    constructor() {
         this.height = 600;
         this.width = 600;
         this.max_radius = 20;
@@ -15,22 +14,28 @@ class Network {
         this.labels = null;
     }
 
-    updateNetwork(tableElements, gameSelected){
+    updateNetwork(tableElements, gameSelected,edgeList){
         let tempidList = tableElements.map(d=>d.Index)
 
-        let maxNeighborCounts = d3.max(tableElements.map(d=>Object.keys(d.neighborList).length))
-
+        let edgeDegree = d3.max(edgeList.map(d=>d[1]))
+        console.log(edgeDegree)
         let idList = new Set(tempidList)
         let that = this;
       //  let linksList = this.data.links.map(function(d){
         //    if (idList.has(d.source) & idList.has(d.target)){
           //      return Object.create(d)}});
         let tempLinksList = Object.keys(gameSelected.neighborList);
-
+        let edgeMap = {}
         let linksList = tempLinksList.map(function(d){
             if (idList.has(d) & d!=gameSelected.Index){
-                let newlink = {source: gameSelected.Index,target:d, value:gameSelected.neighborList[parseInt(d)]}
-                return Object.create(newlink)
+                for (let i = 0; i < edgeList.length;i++){
+                    if (edgeList[i][0]===parseInt(d)){
+                        let newlink = {source: gameSelected.Index,target:d, value:edgeList[i][1]}
+                        edgeMap[d] = edgeList[i][1]
+                        return Object.create(newlink)
+                    }
+                }
+
             }
         });
         let nodesList = tableElements.map(function(d) {
@@ -40,7 +45,7 @@ class Network {
         );
         linksList = linksList.filter(n=>n);
         nodesList = nodesList.filter(n=>n);
-        console.log(linksList)
+        console.log(edgeMap)
         this.links = this.svg.select('.linkGroup')
             .selectAll("line")
             .data(linksList);
@@ -57,7 +62,7 @@ class Network {
         this.nodes = this.nodes.enter().append('circle').merge(this.nodes);
         this.nodes.attr("stroke", "#fff")
             .attr("stroke-width", 1.5)
-            .attr("r", d=>( this.max_radius*Object.keys(d.neighborList).length/maxNeighborCounts))
+            .attr("r", d=>(d.Index===gameSelected.Index?this.max_radius: this.max_radius*edgeMap[parseInt(d.Index)]/edgeDegree))
             .attr("fill", 'black');
 
         this.labels = this.svg.select('.nodeGroup')
@@ -93,9 +98,10 @@ class Network {
                 .attr('transform','translate(' + that.width/2 + ',' +  that.height/2 + ')' );
 
             that.labels
-                .attr('x', d=>d.x+10)
-                .attr('y',d=>d.y)
-                .attr('font','8px')
+                .attr('x', d=>d.x)
+                .attr('y',d=>d.y-20)
+                .attr('font','4px')
+                .attr('text-anchor','middle')
                 .attr('transform','translate(' + that.width/2 + ',' +  that.height/2 + ')' );
         })
     }
@@ -113,9 +119,6 @@ class Network {
 
         this.svg.append("g")
             .classed('nodeGroup',true);
-
-
-
 
         }
 
