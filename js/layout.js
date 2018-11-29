@@ -7,6 +7,7 @@ class Network {
         this.data =data;
         this.height = 600;
         this.width = 600;
+        this.max_radius = 20;
         this.simulation=null;
         this.svg = d3.select('#layout');
         this.links = null;
@@ -24,14 +25,14 @@ class Network {
       //  let linksList = this.data.links.map(function(d){
         //    if (idList.has(d.source) & idList.has(d.target)){
           //      return Object.create(d)}});
-        let tempLinksList = Object.keys(gameSelected.neighborList)
-        console.log(tempLinksList)
+        let tempLinksList = Object.keys(gameSelected.neighborList);
+
         let linksList = tempLinksList.map(function(d){
-            if (idList.has(d)){
-                let newlink = {source: gameSelected.Index,target:d}
+            if (idList.has(d) & d!=gameSelected.Index){
+                let newlink = {source: gameSelected.Index,target:d, value:gameSelected.neighborList[parseInt(d)]}
                 return Object.create(newlink)
             }
-        })
+        });
         let nodesList = tableElements.map(function(d) {
             let newNode = Object.create(d)
             newNode.id = newNode.Index
@@ -39,7 +40,7 @@ class Network {
         );
         linksList = linksList.filter(n=>n);
         nodesList = nodesList.filter(n=>n);
-        console.log(nodesList)
+        console.log(linksList)
         this.links = this.svg.select('.linkGroup')
             .selectAll("line")
             .data(linksList);
@@ -56,10 +57,7 @@ class Network {
         this.nodes = this.nodes.enter().append('circle').merge(this.nodes);
         this.nodes.attr("stroke", "#fff")
             .attr("stroke-width", 1.5)
-            .attr("r", function(d){
-                  let entry = tableElements.find(e=>e.Index===d.id)
-                    return 10*Object.keys(entry.neighborList).length/maxNeighborCounts
-                    })
+            .attr("r", d=>( this.max_radius*Object.keys(d.neighborList).length/maxNeighborCounts))
             .attr("fill", 'black');
 
         this.labels = this.svg.select('.nodeGroup')
@@ -70,18 +68,11 @@ class Network {
         this.labels.text(d=>d.QueryName)
             .attr('fill','black');
 
-        function box_force() {
-            for (var i = 0, n = nodesList.length; i < n; ++i) {
-                let curr_node = nodesList[i];
-                curr_node.x = Math.max(radius, Math.min(this.width - radius, curr_node.x));
-                curr_node.y = Math.max(radius, Math.min(height - radius, curr_node.y));
-            }
-        }
 
 
         this.simulation = d3.forceSimulation(nodesList)
             .force('link',d3.forceLink(linksList).id(d=>d.id))
-            .force('charge',d3.forceManyBody().strength(-1000))
+            .force('charge',d3.forceManyBody().strength(-100))
             .force('center',d3.forceCenter())
             .force('collide',d3.forceCollide().radius(40).iterations(20))
             .stop();
