@@ -11,14 +11,15 @@ class Network {
         this.svg = d3.select('#layout');
         this.links = null;
         this.nodes = null;
-        this.table = table
+        this.table = table;
+        this.selectedGame = null;
     }
 
     updateNetwork(tableElements, gameSelected,edgeList){
         let tempidList = tableElements.map(d=>d.Index)
-
+        this.selectedGame = gameSelected;
         let edgeDegree = d3.max(edgeList.map(d=>d[1]))
-        console.log(edgeDegree)
+
         let idList = new Set(tempidList)
         let that = this;
       //  let linksList = this.data.links.map(function(d){
@@ -45,7 +46,7 @@ class Network {
         );
         linksList = linksList.filter(n=>n);
         nodesList = nodesList.filter(n=>n);
-        console.log(edgeMap)
+
         this.links = this.svg.select('.linkGroup')
             .selectAll("line")
             .data(linksList);
@@ -168,8 +169,46 @@ class Network {
 
         }
     setHighlight(index) {
-        d3.selectAll('.nodeGroup')
+        this.clearHighlight();
+        let toHighlightG = d3.selectAll('.nodeGroup').selectAll('g').filter(d=>d.Index===index);
+        toHighlightG.select('circle')
+            .classed('unselected',false)
+            .classed('selected',true)
+            .attr('fill','#ba375e');
+        toHighlightG.select('text')
+            .classed('unselected',false)
+            .classed('selected',true)
+            .attr('fill','#ba375e')
+            .attr('font-size','16px');
+        d3.selectAll('.unselected')
+            .attr('opacity','0.5')
     }
+    clearHighlight(){
+        let that = this;
+        d3.selectAll('.nodeGroup')
+            .selectAll('circle')
+            .classed('unselected',true)
+            .classed('selected',false)
+            .attr('fill',function(d){
+                if (d.Index===that.selectedGame.Index){
+                    return '#42c2f4'
+                }
+                else{ return '#153363'}
+            }) ;
 
+        d3.selectAll('.nodeGroup')
+            .selectAll('text')
+            .classed('unselected',true)
+            .classed('selected',false)
+            .attr('fill',function(d){
+                if (d.Index===that.selectedGame.Index){
+                    return '#42c2f4'
+                }
+                else{ return '#153363'}
+            })
+            .attr('font-size','8px');
+
+        d3.selectAll('.unselected').attr('opacity','1');
+    }
 
 }
