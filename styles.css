@@ -1,4 +1,6 @@
-
+body{
+  background-image: url('/assets/paper.jpg')
+}
 table {
     border-collapse: collapse;
     font: 14px sans-serif;
@@ -99,31 +101,20 @@ header {
     height: 100px;
 }
 
-.goalBar{
-    opacity:0.6;
-}
-
-.goalCircle{
-    stroke-width: 3px;
-    r: 5px;
-}
 
 
-.nodeGroup circle {
-    fill: #153363;;
-}
-
-.nodeGroup text {
+.unselected circle {
     fill: #153363;
 }
 
-.winner circle {
-    fill: #364e74;
+.selected circle{
+  fill: #42ebf4
 }
 
-.loser text {
-    text-shadow: 0 1px 0 #fff, 0 -1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff;
-}
+
+
+
+
 
 .link {
     fill: none;
@@ -132,10 +123,7 @@ header {
     stroke-width: 3px;
 }
 
-.selected {
-    stroke: #3665af;
-    stroke-width: 6px;
-}
+
 
 .selectedLabel {
     fill: #3665af;
@@ -153,5 +141,3 @@ header {
     padding: 0.5em;
     float: left;
 }
-
-

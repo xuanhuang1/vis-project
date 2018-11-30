@@ -11,7 +11,6 @@ class Network {
         this.svg = d3.select('#layout');
         this.links = null;
         this.nodes = null;
-        this.labels = null;
     }
 
     updateNetwork(tableElements, gameSelected,edgeList){
@@ -56,22 +55,19 @@ class Network {
             .attr("stroke-opacity", 0.4);
 
         this.nodes = this.svg.select('.nodeGroup')
-            .selectAll('circle')
+            .selectAll('g')
             .data(nodesList);
         this.nodes.exit().remove();
-        this.nodes = this.nodes.enter().append('circle').merge(this.nodes);
-        this.nodes.attr("stroke", "#fff")
-            .attr("stroke-width", 1.5)
-            .attr("r", d=>(d.Index===gameSelected.Index?this.max_radius: this.max_radius*edgeMap[parseInt(d.Index)]/edgeDegree))
-            .attr("fill", 'black');
+        this.nodes = this.nodes.enter().append('g').merge(this.nodes);
 
-        this.labels = this.svg.select('.nodeGroup')
-            .selectAll('text')
-            .data(nodesList);
-        this.labels.exit().remove();
-        this.labels = this.labels.enter().append('text').merge(this.labels)
-        this.labels.text(d=>d.QueryName)
-            .attr('fill','black');
+
+        // this.labels = this.svg.select('.nodeGroup')
+        //     .selectAll('text')
+        //     .data(nodesList);
+        // this.labels.exit().remove();
+        // this.labels = this.labels.enter().append('text').merge(this.labels)
+        // this.labels.text(d=>d.QueryName)
+        //     .attr('fill','black');
 
 
 
@@ -92,17 +88,50 @@ class Network {
                 .attr("y2", d => d.target.y)
                 .attr('transform','translate(' + that.width/2 + ',' +  that.height/2 + ')' );
 
-            that.nodes
+            that.nodes.append('circle')
+                .classed('unselected',true)
+                .attr("stroke", "#fff")
+                .attr("stroke-width", 0)
+                .attr('fill', '#153363')
+                .attr("r", d=>(d.Index===gameSelected.Index?that.max_radius: that.max_radius*edgeMap[parseInt(d.Index)]/edgeDegree))
                 .attr("cx", d => d.x)
                 .attr("cy", d => d.y)
                 .attr('transform','translate(' + that.width/2 + ',' +  that.height/2 + ')' );
 
-            that.labels
-                .attr('x', d=>d.x)
+            that.nodes.append('text')
+                .attr('x', d=>d.x+12)
                 .attr('y',d=>d.y-20)
-                .attr('font','4px')
+                .attr("stroke", "#fff")
+                .attr("stroke-width", 0)
+                .attr('fill', '#153363')
+                .attr('font-size', '8px')
+                .text(d=>d.QueryName)
+                .classed('unselected',true)
                 .attr('text-anchor','middle')
                 .attr('transform','translate(' + that.width/2 + ',' +  that.height/2 + ')' );
+
+            that.nodes.on('mouseover',function(){
+              d3.select(this).select('circle')
+              .classed('unselected',false)
+              .classed('selected',true)
+              .attr('fill','#48d6f9');
+              d3.select(this).select('text')
+              .classed('unselected',false)
+              .classed('selected',true)
+              .attr('fill','#48d6f9')
+              .attr('font-size','16px');
+              })
+            .on('mouseout',function(){
+              d3.select(this).select('circle')
+              .classed('unselected',true)
+              .classed('selected',false)
+              .attr('fill','#153363');
+              d3.select(this).select('text')
+              .classed('unselected',true)
+              .classed('selected',false)
+              .attr('fill','#153363')
+              .attr('font-size','8px');
+            });
         })
     }
 
