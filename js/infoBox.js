@@ -14,23 +14,29 @@ class InfoBox{
 
         this.svg.append('text')
             .attr('id','gameTitle')
-            .attr('fill','white')
-            .attr('text-align','left')
-            .attr('vertical-align', 'text-top')
+            .classed('infoBox',true)
             .attr('x',5)
             .attr('y',20)
-            .attr('font','15px')
-            .attr('opacity',0.8);
+
+        this.svg.append('svg:image')
+            .attr('xlink:href','https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Metacritic.svg/2000px-Metacritic.svg.png')
+            .attr('x',0)
+            .attr('y',40)
+            .attr('width',20)
+            .attr('height',20)
+
+        this.svg.append('text')
+            .attr('id','Metacritic')
+            .classed('infoBox',true)
+            .attr('x',5)
+            .attr('y',40)
+
         this.svg.append('text')
             .attr('id','gameDescription')
-            .attr('fill','white')
-            .attr('text-align','left')
-            .attr('vertical-align', 'text-top')
+            .classed('infoBox',true)
             .attr('x',5)
-            .attr('y',50)
-            .attr('font','15px')
-            .attr('overflow','scroll')
-            .attr('opacity',0.8);
+            .attr('y',60)
+
     }
 
 
@@ -70,6 +76,7 @@ class InfoBox{
     updateInfoBox(gameSelected){
         this.svg.select('#background').attr('xlink:href',gameSelected.Background);
         this.svg.select('#gameTitle').text('Title: ' + gameSelected.QueryName);
+        this.svg.select('#Metacritic').text('MetaCritic')
         this.svg.select('#gameDescription').text(gameSelected.AboutText)
             .call(this.wrap,this.width-10)
             .attr('overflow','scroll')
