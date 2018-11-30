@@ -26,6 +26,9 @@ async function tableCreation(){
     // update elements, calcualte links and sort
     table.updateTable();
 
+    // use table.setHighLight(index) to set hightlight
+    // use table.clearHighLight() to clean all highlights
+
     function onchange() {
         table.updateTable();
     }

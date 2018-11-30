@@ -50,6 +50,10 @@ tbody tr .game {
     background-color: #f0f0f0;
 }
 
+.highLight{
+    background-color: #8AF5F0;
+}
+
 .label{
     fill: #ffffff;
     font: 14px sans-serif;
