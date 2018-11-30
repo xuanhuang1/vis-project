@@ -146,7 +146,8 @@ class Network {
                 })
                 .on('click',function(d){
                     //tell the table to update with new index
-
+                    setSelectedIndex(document.getElementById('gameselector'),d.QueryName)
+                    that.table.updateTable()
                 });
         })
     }
@@ -166,6 +167,9 @@ class Network {
             .classed('nodeGroup',true);
 
         }
+    setHighlight(index) {
+        d3.selectAll('.nodeGroup')
+    }
 
 
 }
