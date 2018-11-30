@@ -20,7 +20,7 @@ class Network {
         this.selectedGame = gameSelected;
         let edgeDegree = d3.max(edgeList.map(d=>d[1]));
         let maxRecomScore = d3.max(tableElements.map(d=>parseInt(d.RecommendationCount)))
-        console.log(maxRecomScore)
+
         let sizeScale = d3.scalePow()
             .exponent([0.5])
             .domain([0, maxRecomScore])
@@ -56,15 +56,7 @@ class Network {
         linksList = linksList.filter(n=>n);
         nodesList = nodesList.filter(n=>n);
 
-        //TODO invisible link nodes
-        //let linkNodes = [];
-
-        // linksList.forEach(function(link) {
-        //     linkNodes.push({
-        //         source: link.source,
-        //         target: link.target
-        //     });
-        // });
+        console.log(this.selectedGame )
 
 
         this.links = this.svg.select('.linkGroup')
@@ -93,9 +85,9 @@ class Network {
 
 
 
-        this.simulation = d3.forceSimulation(nodesList)
-            .force('link',d3.forceLink(linksList).id(d=>d.id))
-            .force('charge',d3.forceManyBody().strength(-100))
+        this.simulation = d3.forceSimulation().nodes(nodesList)
+            .force('link',d3.forceLink(linksList).id(d=>d.id).strength(d=>1/d.value))
+            .force('charge',d3.forceManyBody().strength(1000))
             .force('center',d3.forceCenter())
             .force('collide',d3.forceCollide().radius(40).iterations(20))
             .stop();
@@ -147,7 +139,11 @@ class Network {
                     .attr('font-size','16px');
 
                  d3.selectAll('.unselected')
-                    .attr('opacity','0.5')
+                    .attr('opacity','0.3');
+
+                 d3.selectAll('.linkGroup').selectAll('line')
+                    .filter(x=>x.target.id===d.Index)
+                    .attr('stroke','#ba375e')
 
                 that.table.setHighLight(d.Index)
                 })
@@ -165,6 +161,9 @@ class Network {
 
                     d3.selectAll('.unselected').attr('opacity','1');
                     that.table.clearHighLight();
+
+                    d3.selectAll('.linkGroup').selectAll('line')
+                      .attr('stroke','#999')
                 })
                 .on('click',function(d){
                     //tell the table to update with new index
@@ -202,7 +201,11 @@ class Network {
             .attr('fill','#ba375e')
             .attr('font-size','16px');
         d3.selectAll('.unselected')
-            .attr('opacity','0.5')
+            .attr('opacity','0.3')
+
+        d3.selectAll('.linkGroup').selectAll('line')
+            .filter(x=>x.target.id===index)
+            .attr('stroke','#ba375e')
     }
     clearHighlight(){
         let that = this;
@@ -230,6 +233,8 @@ class Network {
             .attr('font-size','8px');
 
         d3.selectAll('.unselected').attr('opacity','1');
+        d3.selectAll('.linkGroup').selectAll('line')
+          .attr('stroke','#999')
     }
 
 }
