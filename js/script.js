@@ -17,7 +17,7 @@ async function tableCreation(){
 
     addFilters();
     let table = new Table(csvData);
-	let network = new Network();
+	let network = new Network(table);
 	let infobox = new InfoBox();
 	network.createNetwork();
 	infobox.createInfoBox();

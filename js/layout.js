@@ -3,7 +3,7 @@ class Network {
     /**
      * Creates a Tree Object
      */
-    constructor() {
+    constructor(table) {
         this.height = 600;
         this.width = 600;
         this.max_radius = 20;
@@ -11,6 +11,7 @@ class Network {
         this.svg = d3.select('#layout');
         this.links = null;
         this.nodes = null;
+        this.table = table
     }
 
     updateNetwork(tableElements, gameSelected,edgeList){
@@ -112,28 +113,41 @@ class Network {
                 .attr('text-anchor','middle')
                 .attr('transform','translate(' + that.width/2 + ',' +  that.height/2 + ')' );
 
-            that.nodes.on('mouseover',function(){
-              d3.select(this).select('circle')
-              .classed('unselected',false)
-              .classed('selected',true)
-              .attr('fill','#48d6f9');
-              d3.select(this).select('text')
-              .classed('unselected',false)
-              .classed('selected',true)
-              .attr('fill','#48d6f9')
-              .attr('font-size','16px');
-              })
-            .on('mouseout',function(){
-              d3.select(this).select('circle')
-              .classed('unselected',true)
-              .classed('selected',false)
-              .attr('fill','#153363');
-              d3.select(this).select('text')
-              .classed('unselected',true)
-              .classed('selected',false)
-              .attr('fill',d=>(d.Index===gameSelected.Index?'#42c2f4':'#153363') )
-              .attr('font-size','8px');
-            });
+            that.nodes.on('mouseover',function(d){
+                 d3.select(this).select('circle')
+                    .classed('unselected',false)
+                    .classed('selected',true)
+                    .attr('fill','#ba375e');
+                 d3.select(this).select('text')
+                    .classed('unselected',false)
+                    .classed('selected',true)
+                    .attr('fill','#ba375e')
+                    .attr('font-size','16px');
+
+                 d3.selectAll('.unselected')
+                    .attr('opacity','0.5')
+
+                that.table.setHighLight(d.Index)
+                })
+                .on('mouseout',function(){
+                    d3.select(this).select('circle')
+                      .classed('unselected',true)
+                      .classed('selected',false)
+                      .attr('fill',d=>(d.Index===gameSelected.Index?'#42c2f4':'#153363') );
+
+                    d3.select(this).select('text')
+                      .classed('unselected',true)
+                      .classed('selected',false)
+                      .attr('fill',d=>(d.Index===gameSelected.Index?'#42c2f4':'#153363') )
+                      .attr('font-size','8px');
+
+                    d3.selectAll('.unselected').attr('opacity','1');
+                    that.table.clearHighLight();
+                })
+                .on('click',function(d){
+                    //tell the table to update with new index
+
+                });
         })
     }
 

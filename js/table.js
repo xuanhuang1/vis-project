@@ -102,7 +102,7 @@ class Table {
         neighborPairs.sort(function(a,b){
             return (b[1] - a[1]); 
         });
-        console.log(gameSelected)
+
         for (var i = 0; i < d3.min([neighborPairs.length, 30]); i++) {
             let theNeighbor = that.allData[neighborPairs[i][0]];
             theNeighbor.linkCount = neighborPairs[i][1];
