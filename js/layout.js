@@ -199,7 +199,7 @@ class Network {
             .classed('unselected',false)
             .classed('selected',true)
             .attr('fill','#ba375e')
-            .attr('font-size','16px');
+            .attr('font-size','20px');
         d3.selectAll('.unselected')
             .attr('opacity','0.3')
 
@@ -230,7 +230,7 @@ class Network {
                 }
                 else{ return '#153363'}
             })
-            .attr('font-size','8px');
+            .attr('font-size','10px');
 
         d3.selectAll('.unselected').attr('opacity','1');
         d3.selectAll('.linkGroup').selectAll('line')
