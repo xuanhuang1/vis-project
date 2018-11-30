@@ -16,11 +16,20 @@ class Network {
     }
 
     updateNetwork(tableElements, gameSelected,edgeList){
-        let tempidList = tableElements.map(d=>d.Index)
+        let tempidList = tableElements.map(d=>d.Index);
         this.selectedGame = gameSelected;
-        let edgeDegree = d3.max(edgeList.map(d=>d[1]))
+        let edgeDegree = d3.max(edgeList.map(d=>d[1]));
+        let maxRecomScore = d3.max(tableElements.map(d=>parseInt(d.RecommendationCount)))
+        console.log(maxRecomScore)
+        let sizeScale = d3.scalePow()
+            .exponent([0.5])
+            .domain([0, maxRecomScore])
+            .range([2, this.max_radius]);
+        let edgeScale = d3.scaleLinear()
+            .domain([0,edgeDegree])
+            .range([1,10])
 
-        let idList = new Set(tempidList)
+        let idList = new Set(tempidList);
         let that = this;
       //  let linksList = this.data.links.map(function(d){
         //    if (idList.has(d.source) & idList.has(d.target)){
@@ -47,12 +56,23 @@ class Network {
         linksList = linksList.filter(n=>n);
         nodesList = nodesList.filter(n=>n);
 
+        //TODO invisible link nodes
+        //let linkNodes = [];
+
+        // linksList.forEach(function(link) {
+        //     linkNodes.push({
+        //         source: link.source,
+        //         target: link.target
+        //     });
+        // });
+
+
         this.links = this.svg.select('.linkGroup')
             .selectAll("line")
             .data(linksList);
         this.links.exit().remove();
         this.links = this.links.enter().append("line").merge(this.links);
-        this.links.attr("stroke-width", 2)
+        this.links.attr("stroke-width", d=>edgeScale(d.value))
             .attr("stroke", "#999")
             .attr("stroke-opacity", 0.4);
 
@@ -97,7 +117,8 @@ class Network {
                 .attr("stroke", "#fff")
                 .attr("stroke-width", 0)
                 .attr('fill',d=>(d.Index===gameSelected.Index?'#42c2f4':'#153363') )
-                .attr("r", d=>(d.Index===gameSelected.Index?that.max_radius: that.max_radius*edgeMap[parseInt(d.Index)]/edgeDegree))
+                //.attr("r", d=>(d.Index===gameSelected.Index?that.max_radius: that.max_radius*edgeMap[parseInt(d.Index)]/edgeDegree))
+                .attr('r',d=>sizeScale(d.RecommendationCount))
                 .attr("cx", d => d.x)
                 .attr("cy", d => d.y)
                 .attr('transform','translate(' + that.width/2 + ',' +  that.height/2 + ')' );
