@@ -252,6 +252,14 @@ class Table {
         this.network.updateNetwork(this.tableElements,gameSelected,neighborPairs);
         this.infoBox.updateInfoBox(gameSelected)
 
+        tr.on('mouseover', function(d){
+                console.log(d.Index);
+                // call network update method with d.Index
+            })
+            .on('mouseout', function (d) {
+                
+            });
+
     };
 
     getData(){return this.tableElements;}
