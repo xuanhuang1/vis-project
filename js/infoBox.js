@@ -24,7 +24,8 @@ class InfoBox{
             .attr('x',5)
             .attr('y',30)
             .attr('width',20)
-            .attr('height',20);
+            .attr('height',20)
+            .attr('opacity',0.6);
 
         this.svg.append('text')
             .attr('id','Metacritic')
@@ -96,7 +97,7 @@ class InfoBox{
         let finalString = '';
         console.log(sentences);
         for(let i=0;i<sentences.length;i++){
-          if(sentencesLen > 850) break;
+          if(sentencesLen > 700) break;
           finalString += (sentences[i]+". ");
           sentencesLen += (sentences[i].length+1);
         }

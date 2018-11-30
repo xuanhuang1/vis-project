@@ -13,11 +13,11 @@ class Table {
         this.platformFilterArray = [false,false, false];
         this.controllerFilter = false;
         this.genreFilter = false;
-        this.genreFilterArray = [false,false,false,false,false, false,false,false,false,false, 
+        this.genreFilterArray = [false,false,false,false,false, false,false,false,false,false,
                                 false,false,false];
         this.langFilter = false;
-        this.langFilterArray = [false,false,false,false,false, false,false,false,false,false, 
-                                false,false,false,false,false, false,false,false,false,false, 
+        this.langFilterArray = [false,false,false,false,false, false,false,false,false,false,
+                                false,false,false,false,false, false,false,false,false,false,
                                 false];
         this.PriceFilterArray = [0,60];
         this.yearFilterArray = [0,2019];
@@ -91,7 +91,7 @@ class Table {
 
         let that = this;
 
-        let gamenameSelected = d3.select("#gameselector").node().value; 
+        let gamenameSelected = d3.select("#gameselector").node().value;
         let gameSelected = that.allData.filter((d)=>{return (d.QueryName == gamenameSelected)})[0];
         //console.log(that.tableElements[0]);
         //calcLinks(gameSelected, that.tableElements);
@@ -100,7 +100,7 @@ class Table {
         that.tableElements = [];
         that.tableElements.push(gameSelected);
         neighborPairs.sort(function(a,b){
-            return (b[1] - a[1]); 
+            return (b[1] - a[1]);
         });
 
         for (var i = 0; i < d3.min([neighborPairs.length, 30]); i++) {
@@ -147,7 +147,7 @@ class Table {
 
 
 
-        //Append td elements for the remaining columns. 
+        //Append td elements for the remaining columns.
         //Data for each cell is of the type: {'type':<'game' or 'aggregate'>, 'vis' :<'bar', 'goals', or 'text'>, 'value':<[array of 1 or two elements]>}
 
 
@@ -156,13 +156,13 @@ class Table {
                 (i!=0)? d.linkCount:'-' ,
                 d.PriceFinal,
                 d.ReleaseDate,
-                d.SupportedLanguages, 
-                d.RequiredAge, 
+                d.SupportedLanguages,
+                d.RequiredAge,
                 ((d.ControllerSupport == 'TRUE')? 'Y':'') ,
                 [d.PlatformWindows,d.PlatformMac, d.PlatformLinux],
                 [d.GenreIsNonGame.toLowerCase(), d.GenreIsIndie.toLowerCase(), d.GenreIsAction.toLowerCase(), d.GenreIsAdventure.toLowerCase(), d.GenreIsCasual.toLowerCase(),
                     d.GenreIsStrategy.toLowerCase(), d.GenreIsRPG.toLowerCase(), d.GenreIsSimulation.toLowerCase(), d.GenreIsEarlyAccess.toLowerCase(),
-                    d.GenreIsFreeToPlay.toLowerCase(), d.GenreIsSports.toLowerCase(), d.GenreIsRacing.toLowerCase(), d.GenreIsMassivelyMultiplayer.toLowerCase()]             
+                    d.GenreIsFreeToPlay.toLowerCase(), d.GenreIsSports.toLowerCase(), d.GenreIsRacing.toLowerCase(), d.GenreIsMassivelyMultiplayer.toLowerCase()]
             ]);
         let td_enter = td.enter().append('td');
         let Link_svg = td_enter.filter(function (d, i) { return i === 0;}).append('svg').classed('Link_svg',true)
@@ -198,9 +198,9 @@ class Table {
         Pltfm_svg.append('text').attr('class', 'WindowsSrpt');
         Pltfm_svg.append('text').attr('class', 'MacSrpt');
         Pltfm_svg.append('text').attr('class', 'LinuxSrpt');
-        for (var i = 0; i < genreTags.length; i++) 
+        for (var i = 0; i < genreTags.length; i++)
             Genre_svg.append('text').attr('class', 'genre'+genreTags[i]);
-        
+
 
         td.exit().remove();
         td = td.merge(td_enter);
@@ -237,7 +237,7 @@ class Table {
         td.select('.MacSrpt').text(d=>(d[1] == 'TRUE')? "M": "");
         td.select('.LinuxSrpt').text(d=>(d[2] == 'TRUE')? "L": "");
         //console.log(td.select('.'+'genre'+genreTags[1]).data());
-        for (var i = 0; i < genreTags.length; i++) 
+        for (var i = 0; i < genreTags.length; i++)
             td.select('.'+'genre'+genreTags[i]).attr('x', 38*i).text(d=>((d[i]=='true')? genreTags[i][0]+genreTags[i][1]+genreTags[i][2]+genreTags[i][3]:'-'));
 
         td.select('.Lang_svg')
@@ -300,7 +300,7 @@ class Table {
         if(that.genreFilter == true){
             a = a.filter(function(d){
                 let genreFilterAttrs =  [
-                    that.allData[d[0]].GenreIsNonGame, that.allData[d[0]].GenreIsIndie, 
+                    that.allData[d[0]].GenreIsNonGame, that.allData[d[0]].GenreIsIndie,
                     that.allData[d[0]].GenreIsAction,  that.allData[d[0]].GenreIsAdventure,
                     that.allData[d[0]].GenreIsCasual,  that.allData[d[0]].GenreIsStrategy,
                     that.allData[d[0]].GenreIsRPG   ,  that.allData[d[0]].GenreIsSimulation,
@@ -342,8 +342,8 @@ class Table {
             a = a.filter(function(d){
                 let year = +(that.allData[d[0]].ReleaseDate.split(' ')[2]);
                 return (
-                        ( (year < (+that.yearFilterArray[0])) == false) 
-                     && ( (year > (+that.yearFilterArray[1])) == false) 
+                        ( (year < (+that.yearFilterArray[0])) == false)
+                     && ( (year > (+that.yearFilterArray[1])) == false)
                     )
             });
         }
@@ -373,9 +373,8 @@ function setSelectedIndex(s, v) {
     for ( var i = 0; i < s.options.length; i++ ) {
         if ( s.options[i].text == v ) {
             s.options[i].selected = true;
+            console.log(v);
             return;
         }
     }
 }
-
-

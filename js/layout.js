@@ -121,7 +121,7 @@ class Network {
                 .attr("stroke", "#fff")
                 .attr("stroke-width", 0)
                 .attr('fill', '#153363')
-                .attr('font-size', '8px')
+                .attr('font-size', '10px')
                 .text(d=>d.QueryName)
                 .classed('unselected',true)
                 .attr('text-anchor','middle')
@@ -136,7 +136,7 @@ class Network {
                     .classed('unselected',false)
                     .classed('selected',true)
                     .attr('fill','#ba375e')
-                    .attr('font-size','16px');
+                    .attr('font-size','20px');
 
                  d3.selectAll('.unselected')
                     .attr('opacity','0.3');
@@ -157,7 +157,7 @@ class Network {
                       .classed('unselected',true)
                       .classed('selected',false)
                       .attr('fill',d=>(d.Index===gameSelected.Index?'#42c2f4':'#153363') )
-                      .attr('font-size','8px');
+                      .attr('font-size','10px');
 
                     d3.selectAll('.unselected').attr('opacity','1');
                     that.table.clearHighLight();

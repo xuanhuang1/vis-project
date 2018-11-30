@@ -4,13 +4,15 @@
 
 async function tableCreation(){
 	let csvData = await d3.csv('data/game-features.csv')
+	let dropdownArray = csvData.map(d=>d.QueryName);
+	dropdownArray.sort();
     let selector = d3.select("#dropdown")
         .append("select")
         .attr("id", "gameselector")
         .selectAll("option")
-        .data(csvData)
+        .data(dropdownArray)
         .enter().append("option")
-        .text(function(d) { return d.QueryName; })
+        .text(function(d) { return d; })
     d3.select("#gameselector").on('change',onchange);
     d3.select("#applyFilterButton").on('click',applyFilter);
     d3.select("#clearFilterButton").on('click',clearFilter);
@@ -23,6 +25,14 @@ async function tableCreation(){
 	infobox.createInfoBox();
 	table.assignNetworkandInfoBox(network,infobox);
     table.createTable();
+
+		let s = document.getElementById('gameselector');
+		for ( var i = 0; i < s.options.length; i++ ) {
+				if ( s.options[i].text == "The Elder Scrolls V Skyrim" ) {
+						s.options[i].selected = true;
+						break;
+				}
+		}
     // update elements, calcualte links and sort
     table.updateTable();
 
@@ -149,5 +159,3 @@ async function tableCreation(){
 
 
     }
-
-
