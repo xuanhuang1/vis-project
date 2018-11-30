@@ -124,6 +124,9 @@ header {
   opacity: 0.7;
   font-size: 15px;
 }
+#gameDescription{
+  font-size: 12px;
+}
 
 
 .link {
