@@ -88,11 +88,13 @@ class Network {
                 .attr("y2", d => d.target.y)
                 .attr('transform','translate(' + that.width/2 + ',' +  that.height/2 + ')' );
 
+            that.nodes.selectAll('circle').remove();
+            that.nodes.selectAll('text').remove();
             that.nodes.append('circle')
                 .classed('unselected',true)
                 .attr("stroke", "#fff")
                 .attr("stroke-width", 0)
-                .attr('fill', '#153363')
+                .attr('fill',d=>(d.Index===gameSelected.Index?'#42c2f4':'#153363') )
                 .attr("r", d=>(d.Index===gameSelected.Index?that.max_radius: that.max_radius*edgeMap[parseInt(d.Index)]/edgeDegree))
                 .attr("cx", d => d.x)
                 .attr("cy", d => d.y)
@@ -129,7 +131,7 @@ class Network {
               d3.select(this).select('text')
               .classed('unselected',true)
               .classed('selected',false)
-              .attr('fill','#153363')
+              .attr('fill',d=>(d.Index===gameSelected.Index?'#42c2f4':'#153363') )
               .attr('font-size','8px');
             });
         })
