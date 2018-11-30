@@ -88,6 +88,7 @@ class Table {
     updateTable() {
         // ******* TODO: PART III *******
         //Create table rows
+
         let that = this;
 
         let gamenameSelected = d3.select("#gameselector").node().value; 
@@ -108,7 +109,9 @@ class Table {
             that.tableElements.push(theNeighbor);
         }
 
-        console.log(that.tableElements);
+        that.clearHighLight();
+
+        //console.log(that.tableElements);
         //that.tableElements
 
 
@@ -252,6 +255,22 @@ class Table {
     };
 
     getData(){return this.tableElements;}
+
+
+    clearHighLight(){
+    	let highLights = d3.selectAll('.highLight');
+    	highLights.classed('highLight', false);
+    }
+
+    setHighLight(gameIndex){
+    	this.clearHighLight();
+    	let trSelectedArray = d3.selectAll('tr').filter(function(d){
+    		if (typeof d == 'undefined') return false;
+    		return (d.Index == gameIndex);
+    	});
+    	if(trSelectedArray == null) return;
+    	trSelectedArray.classed('highLight', true);
+    }
 
     filterNeighbors(neighborPairs){
         let that = this;
