@@ -117,12 +117,12 @@ header {
 
 
 
-.infoBox text{
+.infoBox{
   fill: white;
   text-align: left;
   vertical-align: text-top;
   opacity: 0.7;
-  font:15px
+  font-size: 15px;
 }
 
 
