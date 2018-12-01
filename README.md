@@ -3,6 +3,7 @@
 [Project Website](https://htmlpreview.github.io/?https://github.com/xuanhuang1/vis-project/blob/master/project.html)
 
 [Demo Video](https://www.youtube.com/watch?v=jkn7B7dQ4z4&feature=youtu.be)
+
 Haihan Lin, Xuan Huang
 u1209767, u1206326
 
